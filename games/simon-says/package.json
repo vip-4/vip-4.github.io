@@ -1,0 +1,10 @@
+{
+  "name": "simon-game",
+  "version": "1.0.0",
+  "description": "Follow me - Simon Says clone built with Phaser.js, deployed on Cloudflare Pages",
+  "scripts": {
+    "dev": "wrangler pages dev . --port=8793",
+    "preview": "npx serve . --port=3006"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,10 @@
+{
+  "name": "retro-snake-game",
+  "version": "1.0.0",
+  "description": "Retro Snake - classic snake game with CRT aesthetics",
+  "scripts": {
+    "dev": "wrangler pages dev . --port=8827",
+    "preview": "npx serve . --port=3040"
+  },
+  "license": "MIT"
+}

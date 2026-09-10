@@ -1,0 +1,11 @@
+{
+  "name": "2048-game",
+  "version": "1.0.0",
+  "description": "Classic 2048 puzzle game deployed on Cloudflare Pages",
+  "scripts": {
+    "dev": "wrangler pages dev . --port=8787",
+    "build": "echo 'No build step needed - static files only'",
+    "preview": "npx serve . --port=3000"
+  },
+  "license": "MIT"
+}

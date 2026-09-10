@@ -1,0 +1,7 @@
+name = "simon-game"
+
+[[pages]]
+path = "."
+
+[pages]
+branch = "main"

@@ -1,0 +1,7 @@
+name = "asteroids-game"
+
+[[pages]]
+path = "."
+
+[pages]
+branch = "main"

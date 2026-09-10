@@ -1,0 +1,7 @@
+name = "blockrain-game"
+
+[[pages]]
+path = "."
+
+[pages]
+branch = "main"

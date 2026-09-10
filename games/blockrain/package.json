@@ -1,0 +1,10 @@
+{
+  "name": "blockrain-game",
+  "version": "1.0.0",
+  "description": "Blockrain.js - HTML5 Tetris-like puzzle game deployed on Cloudflare Pages",
+  "scripts": {
+    "dev": "wrangler pages dev . --port=8792",
+    "preview": "npx serve . --port=3005"
+  },
+  "license": "MIT"
+}

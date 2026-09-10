@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Blockrain.js - A tetris game in HTML5 + Javascript (with autoplay!)</title>
+
+  <link href='http://fonts.googleapis.com/css?family=Orbitron:400,900,700,500' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="assets/css/normalize.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+
+</head>
+<body>
+
+<header>
+
+  <div class="welcome">
+    <h1>BlockRain.js</h1>
+    <p>Play <strong>Tetris</strong> on your site</p>
+
+    <div class="buttons">
+      <a href="blockrain.min.js" class="btn btn-download">Download</a>
+      <a href="https://github.com/Aerolab/blockrain.js" class="btn btn-github">Fork on GitHub</a>
+    </div>
+  </div>
+
+  <div id="cover-tetris"></div>
+
+</header>
+
+
+<section class="versus">
+
+  <h1>Pit two bots against each other</h1>
+
+  <div class="game" id="tetris-versus-1">
+
+  </div>
+
+  <div class="game" id="tetris-versus-2">
+
+  </div>
+
+</section>
+
+
+<section class="play">
+
+  <h1>Play</h1>
+
+  <div class="game" id="tetris-hipster">
+
+  </div>
+
+</section>
+
+
+<section class="hipster">
+
+  <h1>Use a background</h1>
+
+  <div class="game" id="tetris-hipster">
+
+  </div>
+
+</section>
+
+
+<script src="assets/js/jquery-1.11.1.min.js"></script>
+<script src="blockrain.jquery.src.js"></script>
+<script src="blockrain.jquery.themes.js"></script>
+
+<script>
+  $('#cover-tetris').blockrain({
+    autoplay: true,
+    speed: 1000,
+    autoBlockWidth: true,
+    autoBlockSize: 25,
+    theme: 'candy'
+  });
+
+  $('#tetris-versus-1').blockrain({
+    autoplay: true,
+    speed: 100,
+    theme: 'gameboy',
+    onGameOver: function(){
+
+    }
+  });
+  $('#tetris-versus-2').blockrain({
+    autoplay: true,
+    speed: 100,
+    theme: 'vim',
+    onGameOver: function(){
+
+    }
+  });
+
+  $('#tetris-hipster').blockrain({
+    autoplay: true,
+    speed: 10,
+    autoBlockWidth: true,
+    autoBlockSize: 30,
+    theme: {
+      primary: '#000000',
+      secondary: '#000000'
+    }
+  });
+</script>
+
+</body>
+</html>

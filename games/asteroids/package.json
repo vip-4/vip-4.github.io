@@ -1,0 +1,10 @@
+{
+  "name": "asteroids-game",
+  "version": "1.0.0",
+  "description": "Pure JavaScript Asteroids clone by Doug McInnes",
+  "scripts": {
+    "dev": "wrangler pages dev . --port=8805",
+    "preview": "npx serve . --port=3018"
+  },
+  "license": "MIT"
+}

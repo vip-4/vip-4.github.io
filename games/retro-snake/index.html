@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retro Snake | Classic Arcade Game</title>
+  <meta name="description" content="A classic Snake arcade game with retro pixel aesthetics, power-ups, and leaderboard. Built with vanilla JavaScript and HTML5 Canvas.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐍</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="scanlines"></div>
+  <div id="game-container">
+    <header>
+      <h1>RETRO SNAKE</h1>
+      <div id="header-stats">
+        <div class="stat">
+          <span class="stat-label">SCORE</span>
+          <span class="stat-value" id="score">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">HIGH</span>
+          <span class="stat-value" id="high-score">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">LEVEL</span>
+          <span class="stat-value" id="level">1</span>
+        </div>
+      </div>
+    </header>
+
+    <div id="canvas-wrapper">
+      <canvas id="game-canvas"></canvas>
+      <div id="overlay" class="visible">
+        <div id="overlay-content">
+          <h2 id="overlay-title">RETRO SNAKE</h2>
+          <p id="overlay-subtitle">Use Arrow Keys or WASD to move</p>
+          <p id="overlay-mobile">Swipe to move on mobile</p>
+          <button id="start-btn">START GAME</button>
+          <div id="final-score" class="hidden">
+            <p>SCORE: <span id="final-score-value">0</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="controls-mobile">
+      <button class="ctrl-btn" id="btn-up" aria-label="Up">&#9650;</button>
+      <div class="ctrl-row">
+        <button class="ctrl-btn" id="btn-left" aria-label="Left">&#9664;</button>
+        <button class="ctrl-btn" id="btn-down" aria-label="Down">&#9660;</button>
+        <button class="ctrl-btn" id="btn-right" aria-label="Right">&#9654;</button>
+      </div>
+    </div>
+
+    <footer>
+      <p>Built with vanilla JS + Canvas | <a href="https://github.com/josedasilva11/retro-snake" target="_blank">GitHub</a></p>
+    </footer>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
