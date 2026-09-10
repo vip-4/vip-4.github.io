@@ -1,0 +1,10 @@
+{
+  "name": "shattered-vale-rpg",
+  "version": "1.0.0",
+  "description": "Shattered Vale RPG - top-down action RPG",
+  "scripts": {
+    "dev": "wrangler pages dev . --port=8833",
+    "preview": "npx serve . --port=3046"
+  },
+  "license": "MIT"
+}

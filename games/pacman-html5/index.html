@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width ,initial-scale = 1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=VT323&display=swap"
+        rel="stylesheet">
+    <title>Pacman</title>
+</head>
+
+<body
+    style="margin: 0px; background-color: black; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center;">
+    <img id="startImage" src="assets/startImage.png" alt="Start" style="display:none;">
+    <canvas id="canvas" width="500" height="500"></canvas>
+    <div style="display: none;">
+        <img id="animations" src="assets/animations.gif" alt="">
+        <img id="ghosts" src="assets/ghost.png" alt="">
+    </div>
+    <script src="ghost.js"></script>
+    <script src="pacman.js"></script>
+    <script src="game.js"></script>
+</body>
+
+</html>

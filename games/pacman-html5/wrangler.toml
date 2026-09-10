@@ -1,0 +1,7 @@
+name = "pacman-clone-game"
+
+[[pages]]
+path = "."
+
+[pages]
+branch = "main"

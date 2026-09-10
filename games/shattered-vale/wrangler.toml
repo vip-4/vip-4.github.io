@@ -1,0 +1,7 @@
+name = "shattered-vale-rpg"
+
+[[pages]]
+path = "."
+
+[pages]
+branch = "main"

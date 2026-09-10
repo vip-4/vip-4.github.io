@@ -1,0 +1,7 @@
+name = "coffee-snake-game"
+
+[[pages]]
+path = "."
+
+[pages]
+branch = "main"

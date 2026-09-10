@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://cyberpunkslotgame.pages.dev/sitemap.xml

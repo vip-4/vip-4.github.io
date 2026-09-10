@@ -1,0 +1,10 @@
+{
+  "name": "coffee-snake-game",
+  "version": "1.0.0",
+  "description": "Coffee Snake - HTML5 snake game written in CoffeeScript by Dominik Heier",
+  "scripts": {
+    "dev": "wrangler pages dev . --port=8806",
+    "preview": "npx serve . --port=3019"
+  },
+  "license": "GPL-3.0"
+}

@@ -1,0 +1,10 @@
+{
+  "name": "clumsybird-game",
+  "version": "1.0.0",
+  "description": "Clumsy Bird - Flappy Bird clone using MelonJS, deployed on Cloudflare Pages",
+  "scripts": {
+    "dev": "wrangler pages dev . --port=8794",
+    "preview": "npx serve . --port=3007"
+  },
+  "license": "GPL-3.0"
+}

@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="acid">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEON REELS//3277 — Cyber Slot Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Syne:ital,wght@1,800&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Unica+One&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --ink: oklch(0.17 0.035 270);
+  --ink-2: oklch(0.22 0.04 270);
+  --ink-3: oklch(0.27 0.045 270);
+  --paper: oklch(0.96 0.01 105);
+  --acid:   oklch(0.90 0.28 120);
+  --magenta:oklch(0.62 0.30 340);
+  --volt:   oklch(0.88 0.26 95);
+  --ghost:  oklch(0.80 0.06 250);
+  --accent: var(--acid);
+  --accent-soft: oklch(0.32 0.12 120);
+  --hair: oklch(0.34 0.05 250);
+  --pad: clamp(1rem, 2.2vw, 1.75rem);
+}
+:root[data-theme="acid"]    { --accent: var(--acid);    --accent-soft: oklch(0.30 0.12 120); }
+:root[data-theme="magenta"]{ --accent: var(--magenta); --accent-soft: oklch(0.28 0.14 335); }
+:root[data-theme="volt"]   { --accent: var(--volt);    --accent-soft: oklch(0.30 0.12 95);  }
+:root[data-theme="ghost"]  { --accent: var(--ghost);   --accent-soft: oklch(0.30 0.05 250); }
+
+*{ box-sizing:border-box; margin:0; padding:0; }
+html{ scroll-behavior:smooth; }
+body{
+  font-family:"Space Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  background:
+    radial-gradient(120% 90% at 15% -10%, oklch(0.24 0.08 300 / .55), transparent 60%),
+    radial-gradient(120% 100% at 110% 110%, oklch(0.28 0.09 160 / .5), transparent 55%),
+    repeating-linear-gradient(0deg, transparent 0 3px, oklch(0.12 0.03 270 / .35) 3px 4px),
+    repeating-linear-gradient(90deg, transparent 0 42px, oklch(0.5 0.06 250 / .06) 42px 43px),
+    var(--ink);
+  color:var(--paper);
+  min-height:100vh;
+  line-height:1.5;
+  letter-spacing:.01em;
+  overflow-x:hidden;
+  position:relative;
+}
+::selection{ background:var(--accent); color:var(--ink); }
+
+/* ============ CRT / SCANLINES OVERLAY ============ */
+.crt{
+  pointer-events:none; position:fixed; inset:0; z-index:60;
+  background:repeating-linear-gradient(0deg, rgba(0,0,0,.25) 0 1px, transparent 1px 3px);
+  mix-blend-mode:multiply; opacity:.5;
+}
+.crt::after{
+  content:""; position:absolute; inset:0;
+  background:radial-gradient(120% 120% at 50% 45%, transparent 55%, oklch(0.08 0.04 270 / .6));
+}
+.vig{ pointer-events:none; position:fixed; inset:0; z-index:59;
+  box-shadow: inset 0 0 22vmin oklch(0.05 0.02 270 / .65); }
+
+/* ============ HUD / HEADER ============ */
+header{
+  display:flex; align-items:center; justify-content:space-between; gap:1rem;
+  padding:var(--pad); flex-wrap:wrap;
+  border-bottom:1px solid var(--hair); position:relative;
+}
+.brand{
+  font-family:"Syne", "Arial Black", sans-serif;
+  font-weight:800; font-style:italic; text-transform:uppercase;
+  font-size:clamp(1.6rem, 4.2vw, 3rem); line-height:.95; letter-spacing:-.02em;
+  color:var(--paper);
+  text-shadow:3px 0 0 var(--magenta), -3px 0 0 oklch(0.7 0.20 220), 0 0 22px var(--accent-soft);
+  white-space:nowrap;
+}
+.brand em{ color:var(--accent); font-style:italic; }
+.brand small{
+  display:block; font-family:"Unica One","Syne",sans-serif; font-weight:400;
+  font-size:.34em; letter-spacing:.42em; color:var(--ghost);
+  text-shadow:1px 0 0 var(--accent), -1px 0 0 var(--magenta);
+  margin-top:.35em;
+}
+.hud{ display:flex; gap:.5rem; flex-wrap:wrap; }
+.stat{
+  border:1px solid var(--hair); border-top:3px solid var(--accent);
+  background:var(--ink-2); padding:.45rem 1rem; min-width:9.5ch;
+}
+.stat b{
+  display:block; font-family:"Syne",sans-serif; font-weight:800;
+  font-size:1.35rem; color:var(--accent); font-variant-numeric:tabular-nums;
+  text-shadow:0 0 12px var(--accent-soft); transition:color .2s;
+}
+.stat span{ font-size:.62rem; letter-spacing:.18em; color:var(--ghost); }
+.toggle{
+  align-self:center; font-family:"Space Mono",monospace; font-size:.7rem; letter-spacing:.12em;
+  color:var(--ghost); background:var(--ink-2); border:1px solid var(--hair);
+  padding:.5rem .8rem; cursor:pointer; text-transform:uppercase; transition:.15s;
+}
+.toggle:hover{ color:var(--paper); border-color:var(--accent); }
+.toggle.on{ color:var(--ink); background:var(--accent); border-color:var(--accent); font-weight:700; }
+
+/* ============ MAIN STAGE ============ */
+.stage{ max-width:1100px; margin:0 auto; padding:var(--pad); }
+.ticker{
+  display:flex; gap:.6rem; align-items:center;
+  overflow:hidden; white-space:nowrap; font-size:.72rem; letter-spacing:.16em;
+  color:var(--accent); border-bottom:1px dashed var(--hair);
+  padding-bottom:.5rem; margin-bottom:var(--pad);
+}
+.ticker .tkn{ color:var(--magenta); }
+.ticker .msg{ animation:tick 24s linear infinite; }
+
+/* ============ SLOT FRAME ============ */
+.machine{
+  position:relative;
+  padding:clamp(.9rem, 2vw, 1.6rem);
+  background:linear-gradient(180deg, var(--ink-3), var(--ink));
+  border:1px solid var(--hair);
+  clip-path:polygon(0 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%);
+  margin-bottom:var(--pad);
+}
+.machine::before{
+  content:""; position:absolute; top:0; left:-60%; height:2px; width:60%;
+  background:linear-gradient(90deg, transparent, var(--accent), transparent);
+  animation:sweep 3.4s ease-in-out infinite;
+}
+.machine-label{
+  display:flex; justify-content:space-between; align-items:baseline;
+  font-family:"Syne",sans-serif; font-weight:700; font-style:italic; text-transform:uppercase;
+  letter-spacing:.06em; font-size:clamp(1rem,2.4vw,1.6rem); color:var(--paper);
+  margin-bottom:.9rem;
+  text-shadow:2px 0 0 var(--magenta), -2px 0 0 oklch(0.7 0.2 220);
+}
+.machine-label small{ font-size:.45em; color:var(--ghost); letter-spacing:.3em; font-family:"Space Mono",monospace; font-weight:400; font-style:normal;}
+
+.reels{
+  position:relative;
+  display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(.35rem,1.2vw,.8rem);
+  background:oklch(0.11 0.03 270);
+  border:3px solid var(--accent);
+  box-shadow:0 0 0 1px var(--ink), 0 0 34px var(--accent-soft), inset 0 0 40px oklch(0.04 0.02 270);
+  padding:clamp(.45rem,.9vw,.7rem);
+  overflow:hidden; transition:border-color .25s, box-shadow .25s;
+}
+.reels.shake{ animation:shake .4s; }
+.reels.glow{ box-shadow:0 0 0 3px var(--accent), 0 0 60px var(--accent), inset 0 0 60px oklch(0.3 0.1 120 / .5); }
+.reel{
+  position:relative; aspect-ratio:1 / 1.35; overflow:hidden;
+  background:var(--ink); border:1px solid var(--hair);
+  box-shadow: inset 0 0 22px oklch(0.05 0.02 270);
+}
+.reel::after{
+  content:""; position:absolute; inset:0; z-index:5; pointer-events:none;
+  background:linear-gradient(180deg, transparent 30%, oklch(0.9 0.2 200 / .12) 50%, transparent 70%);
+}
+.reel::before{
+  content:""; position:absolute; left:0; right:0; top:0; bottom:0; z-index:4; pointer-events:none;
+  box-shadow: inset 0 0 0 1px oklch(0.2 0.05 250 / .6);
+  background:linear-gradient(180deg, oklch(0.08 0.02 270 / .85), transparent 18%, transparent 82%, oklch(0.08 0.02 270 / .85));
+}
+.reel .tape{ position:absolute; inset:0; will-change:transform; }
+.tape.rolling{ animation:roll var(--roll-dur,1s) cubic-bezier(.1,.7,.3,1) forwards; }
+.cell{
+  height:33.3333%; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:.15rem; text-transform:uppercase;
+}
+.cell .sym{ font-size:clamp(2rem, 6.4vw, 3.6rem); line-height:1; filter:drop-shadow(0 0 10px var(--accent-soft)); }
+.cell .lab{
+  font-family:"Unica One","Syne",sans-serif; letter-spacing:.22em;
+  font-size:clamp(.5rem,1.5vw,.8rem); color:var(--ghost);
+}
+.cell.hit-row .lab{ color:var(--accent); text-shadow:0 0 8px var(--accent); }
+.cell.hit-row .sym{ transform:scale(1.15); }
+
+.payline{
+  position:absolute; inset:0; z-index:6; pointer-events:none;
+  border:2px dashed var(--accent);
+  box-shadow:0 0 24px var(--accent-soft), inset 0 0 24px var(--accent-soft);
+  opacity:0; transition:opacity .2s;
+}
+.payline.on{ opacity:1; }
+
+/* ============ CONTROL DECK ============ */
+.ctrl{
+  display:flex; flex-wrap:wrap; gap:.8rem; align-items:center;
+  padding-top:1rem; justify-content:space-between;
+}
+.bank{ display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; }
+.bet{
+  display:flex; align-items:center; gap:.4rem;
+  border:1px solid var(--hair); background:var(--ink-2); padding:.25rem .4rem;
+}
+.bet button{
+  width:2.2rem; height:2.2rem; font-size:1.1rem; cursor:pointer;
+  font-family:"Space Mono",monospace; font-weight:700; color:var(--paper);
+  background:var(--ink-3); border:1px solid var(--hair); transition:.12s;
+}
+.bet button:hover{ background:var(--accent); color:var(--ink); border-color:var(--accent); }
+.bet .val{ min-width:5ch; text-align:center; font-weight:700; color:var(--accent); font-variant-numeric:tabular-nums; }
+.spin{
+  position:relative; overflow:hidden;
+  font-family:"Syne",sans-serif; font-weight:800; font-style:italic; text-transform:uppercase;
+  font-size:clamp(1.1rem,2.6vw,1.8rem); letter-spacing:.12em;
+  color:var(--ink); background:var(--accent); border:none; cursor:pointer;
+  padding:1rem 3.2rem;
+  clip-path:polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  box-shadow:0 0 30px var(--accent-soft);
+  transition:transform .08s, filter .12s; min-height:56px;
+}
+.spin::after{
+  content:""; position:absolute; inset:0;
+  background:repeating-linear-gradient(115deg, transparent 0 8px, oklch(1 0 0/.18) 8px 9px);
+  pointer-events:none;
+}
+.spin:hover{ filter:brightness(1.1); }
+.spin:active{ transform:translateY(3px) scale(.99); }
+.spin:disabled{ filter:grayscale(.7) brightness(.6); cursor:not-allowed; }
+.spin:focus-visible{ outline:3px solid var(--magenta); outline-offset:3px; }
+
+.flash{
+  position:absolute; inset:0; z-index:8; pointer-events:none;
+  display:grid; place-items:center;
+  background:oklch(0.9 0.26 95 / .12);
+}
+.flash .txt{
+  font-family:"Syne",sans-serif; font-weight:800; font-style:italic; text-transform:uppercase;
+  font-size:clamp(2.2rem,9vw,6rem); line-height:.9; letter-spacing:.04em;
+  animation:flashPop .8s both; mix-blend-mode:lighten;
+}
+.flash .sub{
+  display:block; text-align:center; font-size:.32em; letter-spacing:.4em;
+  font-family:"Space Mono",monospace; font-weight:700;
+}
+.hidden{ display:none !important; }
+
+/* ============ THEME HUB ============ */
+h2.hub-title{
+  font-family:"Syne",sans-serif; font-weight:800; font-style:italic; text-transform:uppercase;
+  font-size:clamp(1.3rem,3vw,2.2rem); color:var(--paper);
+  display:flex; align-items:center; gap:1rem; margin:var(--pad) 0 .4rem;
+  text-shadow:2px 0 0 var(--magenta), -2px 0 0 oklch(0.7 .2 220);
+}
+h2.hub-title::after{ content:""; flex:1; height:2px; background:repeating-linear-gradient(90deg,var(--accent) 0 10px,transparent 10px 18px); }
+.hub-sub{ color:var(--ghost); font-size:.8rem; letter-spacing:.1em; margin-bottom:var(--pad); max-width:70ch; }
+.hub{ display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:var(--pad); }
+.game{
+  position:relative; cursor:pointer; user-select:none;
+  background:var(--ink-2);
+  border:1px solid var(--hair); border-top-width:3px; border-top-color:var(--ghost);
+  padding:1.2rem 1rem; min-height:150px;
+  display:flex; flex-direction:column; gap:.6rem;
+  clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%);
+  transition:transform .12s, border-color .2s, box-shadow .25s;
+}
+.game:hover{ transform:translate(-2px,-2px); }
+.game .mini-reel{ display:grid; grid-template-columns:repeat(3,1fr); gap:3px; margin-bottom:.4rem; }
+.game .mini-reel i{
+  aspect-ratio:1; display:grid; place-items:center;
+  font-size:1.3rem; background:var(--ink); border:1px solid var(--hair); font-style:normal; opacity:.9;
+}
+.game .g-tag{ font-family:"Unica One",sans-serif; letter-spacing:.26em; font-size:.68rem; color:var(--ghost); }
+.game .g-name{
+  font-family:"Syne",sans-serif; font-weight:800; font-style:italic; text-transform:uppercase;
+  font-size:1.22rem; line-height:1.05; color:var(--paper);
+}
+.game .g-meta{ font-size:.66rem; color:var(--ghost); letter-spacing:.08em; margin-top:auto; }
+.game .g-cta{
+  margin-top:.3rem; font-size:.72rem; letter-spacing:.2em; color:var(--ink);
+  background:var(--ghost); padding:.3rem .5rem; width:max-content; font-weight:700; text-transform:uppercase;
+  transition:.15s;
+}
+.game .bar-cap{ position:absolute; top:0; right:0; width:14px; height:14px; background:var(--ink); }
+.game.active{ border-top-color:var(--accent); box-shadow:0 0 0 1px var(--accent), 0 0 26px var(--accent-soft); }
+.game.active .g-name{ color:var(--accent); text-shadow:0 0 12px var(--accent-soft); }
+.game.active .g-cta{ background:var(--accent); color:var(--ink); }
+.game:hover .g-cta{ background:var(--accent); color:var(--ink); }
+
+footer{
+  max-width:1100px; margin:calc(var(--pad)*1.5) auto var(--pad);
+  padding:0 var(--pad); display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap;
+  font-size:.68rem; color:var(--ghost); letter-spacing:.14em;
+  border-top:1px dashed var(--hair); padding-top:var(--pad);
+}
+footer a{ color:var(--accent); text-decoration:none; }
+footer a:hover{ text-decoration:underline; }
+
+/* ============ FX ============ */
+@keyframes sweep{ 0%{left:-60%} 100%{left:120%} }
+@keyframes tick{ 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+@keyframes shake{ 0%,100%{transform:translate(0,0)} 20%{transform:translate(-4px,1px)} 40%{transform:translate(3px,-2px)} 60%{transform:translate(-2px,2px)} 80%{transform:translate(2px,-1px)} }
+@keyframes flashPop{ 0%{transform:scale(.2) rotate(-6deg); opacity:0} 40%{transform:scale(1.15) rotate(1deg); opacity:1} 100%{transform:scale(1); opacity:1} }
+@keyframes roll{ from{ transform:translateY(0);} to{ transform:translateY(-800%);} }
+@keyframes floatUp{ to{ transform:translateY(-90px); opacity:0; } }
+.ray{
+  position:fixed; z-index:55; font-family:"Syne",sans-serif; font-weight:800; font-style:italic;
+  color:var(--volt); pointer-events:none;
+  text-shadow:2px 0 0 var(--magenta),-2px 0 0 oklch(.7 .2 220);
+  animation:floatUp 1s ease-out forwards; font-size:1.3rem;
+}
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:.001s !important; transition-duration:.05s !important; }
+  .crt,.vig{ display:none; }
+}
+</style>
+</head>
+<body>
+<div class="crt"></div>
+<div class="vig"></div>
+
+<header>
+  <div class="brand">NEON<em>REELS</em>//<em>3277</em>
+    <small>CYBER&nbsp;SLOT&nbsp;AGGREGATOR&nbsp;v2.1</small>
+  </div>
+  <div class="hud">
+    <div class="stat"><span>CREDIT</span><b id="cr">5,000</b></div>
+    <div class="stat"><span>LAST&nbsp;WIN</span><b id="lw" style="color:var(--volt)">--</b></div>
+    <button class="toggle on" id="fxBtn" type="button" aria-pressed="true">FX: ON</button>
+  </div>
+</header>
+
+<main class="stage">
+  <div class="ticker">
+    <span class="tkn">▣▣▣</span>
+    <span class="msg">SYSTEM ONLINE — JACKPOT POOL 8,847,120 CR — NEW WHEEL: VOID GAMBLER — LICENSED // MIT — JAM REFACTOR: LD54 —&nbsp;&nbsp;&nbsp;</span>
+  </div>
+
+  <section class="machine" aria-label="老虎机">
+    <div class="machine-label">MASTER&nbsp;REEL<small>//ACTIVE-AXIS</small></div>
+    <div class="reels" id="reels">
+      <div class="reel"><div class="tape" data-reel="0"></div></div>
+      <div class="reel"><div class="tape" data-reel="1"></div></div>
+      <div class="reel"><div class="tape" data-reel="2"></div></div>
+      <div class="payline" id="payline" aria-hidden="true"></div>
+      <div class="flash hidden" id="flash"><div class="txt">JACKPOT<span class="sub">PAYLINE // MATCH — 3 SYMBOLS</span></div></div>
+    </div>
+    <div class="ctrl">
+      <div class="bank">
+        <div class="bet">
+          <button id="bd" type="button" aria-label="减少下注">−</button>
+          <span class="val" id="betVal">50</span>
+          <button id="bu" type="button" aria-label="增加下注">+</button>
+        </div>
+        <div class="stat" style="min-width:auto"><span>PAY&nbsp;TABLE</span><b id="mult" style="font-size:.9rem">x50</b></div>
+      </div>
+      <button class="spin" id="spinBtn" type="button">SPIN&nbsp;//&nbsp;GO</button>
+    </div>
+  </section>
+
+  <h2 class="hub-title">GAME&nbsp;<span style="color:var(--accent)">HUB</span></h2>
+  <p class="hub-sub">汇聚 6 套可切换主题的赛博老虎机变体。点击卡片切换整体撞色调（重着色 + 换符号集），每套主题对应不同的赔付矩阵，构成迷你游戏聚合门户。</p>
+  <div class="hub" id="hub"></div>
+</main>
+
+<footer>
+  <span>© 3277 NEON REELS // PURE CSS/JS // 单文件原型</span>
+  <span>按键: <b style="color:var(--accent)">SPACE</b> 快转 · <b style="color:var(--accent)">←/→</b> 改注 · 点击卡片换肤</span>
+</footer>
+
+<script>
+/* ============ DATA ============ */
+const SLOTS = [
+  { id:"acid",    name:"NEON NINJA",   tag:"GEAR-SPIN",     accent:"acid",    syms:["⚙️","🌀","👁️","🦾"], pay:80 },
+  { id:"magenta", name:"GHOST PAR.",   tag:"PHANTOM-WHEEL", accent:"magenta", syms:["💀","👁️","🌀","7️⃣"], pay:120 },
+  { id:"volt",    name:"VOLT JACK",    tag:"HIGH-VOLTAGE",  accent:"volt",    syms:["🔥","💀","⚙️","7️⃣"], pay:150 },
+  { id:"ghost",   name:"MECH AURA",    tag:"SILVER-LINE",   accent:"ghost",   syms:["👁️","💎","🦾","⚙️"], pay:90 },
+  { id:"acid",    name:"VOID GAMBLER", tag:"BLACK-HOLE",    accent:"acid",    syms:["🌀","💎","⚙️","💀"], pay:200 },
+  { id:"magenta", name:"XENO HEAT",    tag:"ALIEN-BURN",    accent:"magenta", syms:["🦾","🔥","👁️","7️⃣"], pay:140 },
+];
+const BETS = [10,25,50,100,250,500];
+
+const state = { credits:5000, betIdx:2, spinning:false, current:0, last:null, wins:0, rtpHit:0, rtpTotal:0 };
+const $ = s => document.querySelector(s);
+const reelEls = [...document.querySelectorAll(".tape")];
+
+/* ============ BUILD / THEME ============ */
+const rnd = a => a[(Math.random()*a.length)|0];
+function cellHTML(sym){
+  return `<div class="cell"><span class="sym">${sym}</span><span class="lab">SYM-${sym.codePointAt(0).toString(16).toUpperCase()}</span></div>`;
+}
+function buildReel(re, syms){
+  let html="";
+  for(let i=0;i<9;i++) html += cellHTML(syms[i % syms.length]);
+  re.innerHTML = html;
+  re.style.transition = "none";
+  re.style.transform = "translateY(0)";
+  void re.getBoundingClientRect();
+}
+function applyTheme(idx){
+  const s = SLOTS[idx];
+  state.current = idx;
+  document.documentElement.dataset.theme = s.accent;
+  reelEls.forEach(re=>buildReel(re, s.syms));
+  $("#mult").textContent = "x"+s.pay;
+  renderStats();
+}
+function renderStats(){
+  $("#cr").textContent = state.credits.toLocaleString();
+  $("#lw").textContent = state.last===null ? "--" : (state.last>0?"+":"")+state.last.toLocaleString();
+  $("#lw").style.color = state.last>0 ? "var(--acid)":"var(--volt)";
+  $("#betVal").textContent = BETS[state.betIdx];
+}
+
+/* ============ HUB ============ */
+function renderHub(){
+  const hub = $("#hub"); hub.innerHTML="";
+  SLOTS.forEach((s,i)=>{
+    const card = document.createElement("div");
+    card.className = "game"+(i===state.current?" active":"");
+    card.tabIndex = 0; card.setAttribute("role","button");
+    card.innerHTML =
+      `<div class="mini-reel">${s.syms.slice(0,3).map(x=>`<i>${x}</i>`).join("")}</div>`+
+      `<div class="g-tag">${s.tag} // 0${i+1}</div>`+
+      `<div class="g-name">${s.name}</div>`+
+      `<div class="g-meta">SYMS ${s.syms.join(" ")} · PAY x${s.pay}</div>`+
+      `<div class="g-cta">${i===state.current?"LOADED ▮":"INSTALL →"}</div>`+
+      `<div class="bar-cap"></div>`;
+    card.addEventListener("click", ()=>switchGame(i));
+    card.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); switchGame(i);} });
+    hub.appendChild(card);
+  });
+}
+function switchGame(i){
+  if(i===state.current || state.spinning) return;
+  flashText("LOAD", false);
+  setTimeout(()=>{ applyTheme(i); renderHub(); }, 320);
+}
+
+/* ============ SPIN ============ */
+function settleReel(re, stopGroup, target, syms){
+  const cells=[];
+  for(let g=0; g<3; g++){
+    const top = rnd(syms);
+    const mid = (g===stopGroup)? target : rnd(syms);
+    const bot = rnd(syms);
+    cells.push(cellHTML(top), cellHTML(mid), cellHTML(bot));
+  }
+  re.innerHTML = cells.join("");
+  re.style.transition="none";
+  re.style.transform = `translateY(-${stopGroup*100}%)`;  // 100% tape = 一组
+  void re.getBoundingClientRect();
+}
+function spin(){
+  if(state.spinning) return;
+  const bet = BETS[state.betIdx];
+  if(state.credits < bet){ flashText("NO CR", false); return; }
+  state.spinning = true;
+  state.credits -= bet;
+  state.rtpTotal += bet;
+  renderStats();
+  $("#spinBtn").disabled = true;
+  const reels = $("#reels");
+  reels.classList.remove("glow"); updatePayline(false);
+
+  const s = SLOTS[state.current];
+  // 预判结果：70% 时三轴同号（含约 1/3 概率同吉祥符）
+  let center = [rnd(s.syms), rnd(s.syms), rnd(s.syms)];
+  if(Math.random()<0.72){ const c=rnd(s.syms); center=[c,c,c]; }
+
+  // 播放滚动动画
+  reelEls.forEach((re,ri)=>{
+    re.classList.remove("rolling");
+    void re.offsetWidth;
+    re.classList.add("rolling");
+    re.style.setProperty("--roll-dur", (0.9+Math.random()*0.5)+"s");
+  });
+
+  // 各自停止 —— 错开结束时间更自然
+  reelEls.forEach((re,ri)=>{
+    const stopG = (Math.random()*3)|0;
+    setTimeout(()=>{
+      settleReel(re, stopG, center[ri], s.syms);
+      re.classList.remove("rolling");
+    }, 950 + ri*180);
+  });
+
+  const total = 950 + 2*180 + 120;
+  setTimeout(()=>resolve(center, bet), total);
+}
+
+function resolve(center, bet){
+  const hit = center[0]===center[1] && center[1]===center[2];
+  const reels = $("#reels");
+  if(hit){
+    const sym = center[0];
+    const s = SLOTS[state.current];
+    const multi = sym==="7️⃣" ? s.pay*3 : sym==="💎" ? s.pay*2 : s.pay;
+    const win = bet * multi;
+    state.credits += win; state.last = win; state.wins++; state.rtpHit += win;
+    renderStats();
+    // 中心行 = stopG 对应的中间 cell（每组中间位在位置 g*3+1）
+    markCenter();
+    reels.classList.add("shake","glow"); setTimeout(()=>reels.classList.remove("shake"),500);
+    updatePayline(true);
+    flashText("WIN "+win.toLocaleString(), true);
+    confetti();
+  } else {
+    state.last = 0; renderStats();
+    flashText("--", false);
+  }
+  setTimeout(()=>{
+    reelEls.forEach(re=>[...re.children].forEach(c=>c.classList.remove("hit-row")));
+    reels.classList.remove("glow"); updatePayline(false);
+    state.spinning=false; $("#spinBtn").disabled=false;
+  }, 1200);
+}
+function markCenter(){
+  // 每个 reel 已 settle 到 stopGroup，中心可见格 = 位置 stopGroup*3+1；因重建后 transform 已知，直接取中间：索引由 translateY/100% 推断
+  reelEls.forEach(re=>{
+    const y = parseFloat(re.style.transform.replace(/[^0-9.\-]/g,"") );
+    const g = Math.round(-y/100);
+    const idx = g*3+1;
+    const kid = re.children[idx]; if(kid) kid.classList.add("hit-row");
+  });
+}
+function updatePayline(on){ $("#payline").classList.toggle("on", on); }
+
+/* ============ FX ============ */
+function flashText(txt, big){
+  const f=$("#flash"); const inner=f.querySelector(".txt");
+  inner.innerHTML = txt + (big?`<span class="sub" style="color:var(--acid);text-shadow:none">PAYLINE // MATCH — 3 SYMBOLS</span>`
+                            :`<span class="sub" style="color:var(--ghost);text-shadow:none">${SLOTS[state.current].tag} // 系统在线</span>`);
+  inner.style.animation="none"; void inner.offsetWidth; inner.style.animation="";
+  f.classList.remove("hidden");
+  clearTimeout(f._t);
+  f._t = setTimeout(()=>f.classList.add("hidden"), 850);
+}
+function confetti(){
+  if(!fxOn) return;
+  const colors=["var(--acid)","var(--magenta)","var(--volt)","var(--ghost)"];
+  for(let i=0;i<36;i++){
+    const r=document.createElement("div");
+    r.className="ray";
+    r.textContent=["▮","▯","◆","▲","✚","/","\\","●"][i%8];
+    r.style.left=(8+Math.random()*84)+"vw";
+    r.style.top=(30+Math.random()*40)+"vh";
+    r.style.color=colors[i%4];
+    r.style.fontSize=(1+Math.random()*1.6)+"rem";
+    r.style.animationDuration=(0.8+Math.random()*0.7)+"s";
+    document.body.appendChild(r);
+    setTimeout(()=>r.remove(),1600);
+  }
+}
+let fxOn=true;
+$("#fxBtn").addEventListener("click", function(){
+  fxOn=!fxOn;
+  this.classList.toggle("on",fxOn);
+  this.setAttribute("aria-pressed",fxOn);
+  this.textContent="FX: "+(fxOn?"ON":"OFF");
+  document.querySelector(".crt").style.display=fxOn?"":"none";
+});
+
+/* ============ INPUT ============ */
+$("#spinBtn").addEventListener("click", spin);
+document.addEventListener("keydown", e=>{
+  if(e.key===" "){ e.preventDefault(); spin(); }
+  else if(e.key==="ArrowLeft"){ state.betIdx=Math.max(0,state.betIdx-1); renderStats(); }
+  else if(e.key==="ArrowRight"){ state.betIdx=Math.min(BETS.length-1,state.betIdx+1); renderStats(); }
+});
+$("#bu").addEventListener("click", ()=>{ state.betIdx=Math.min(BETS.length-1,state.betIdx+1); renderStats(); });
+$("#bd").addEventListener("click", ()=>{ state.betIdx=Math.max(0,state.betIdx-1); renderStats(); });
+
+/* ============ INIT ============ */
+applyTheme(0);
+renderHub();
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "pacman-clone-game",
+  "version": "1.0.0",
+  "description": "PacMan Clone - classic arcade Pac-Man with ghost AI",
+  "scripts": {
+    "dev": "wrangler pages dev . --port=8844",
+    "preview": "npx serve . --port=3058"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,272 @@
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin: 0 auto;
+  height: 100%;
+  background: #0a0f0a;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  overflow: hidden;
+}
+
+#wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 14px;
+}
+
+/* ============ HUD SHELL ============ */
+
+#hud {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  width: 100%;
+  max-width: 96vw;
+  background: linear-gradient(180deg, #26201a 0%, #1c1712 55%, #171310 100%);
+  border: 2px solid #4a3d2c;
+  border-radius: 10px;
+  padding: 10px 16px;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 230, 180, 0.08),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.4);
+  position: relative;
+}
+
+/* riveted corner studs, the small detail that sells "iron plate" */
+#hud::before,
+#hud::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #d8c9a0, #5a4b34 70%);
+}
+#hud::before {
+  left: 6px;
+}
+#hud::after {
+  right: 6px;
+}
+
+.stat-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+}
+
+.stat-group + .stat-group {
+  border-left: 1px solid rgba(232, 220, 192, 0.12);
+}
+
+.stat-icon {
+  font-size: 18px;
+  line-height: 1;
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
+}
+
+.stat-label {
+  font-family: "Cinzel", "Segoe UI", serif;
+  font-weight: 700;
+  font-size: 12px;
+  color: #d4af37;
+  text-shadow: 0 0 6px rgba(212, 175, 55, 0.5);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.stat-text {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #e8dcc0;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  min-width: 62px;
+}
+
+/* ============ GEM BARS ============ */
+
+.bar-track {
+  width: 130px;
+  height: 14px;
+  background: #0c0a08;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  border-radius: 7px;
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+    inset 0 2px 3px rgba(0, 0, 0, 0.8),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.bar-fill {
+  height: 100%;
+  width: 100%;
+  border-radius: 6px;
+  position: relative;
+  transition: width 0.25s ease-out;
+  overflow: hidden;
+}
+
+/* faceted shine sweep — the signature touch on every gem bar */
+.bar-fill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.35) 32%,
+    transparent 44%
+  );
+  animation: gemShine 3.2s ease-in-out infinite;
+}
+
+@keyframes gemShine {
+  0% {
+    transform: translateX(-60%);
+  }
+  60%,
+  100% {
+    transform: translateX(60%);
+  }
+}
+
+.hp-fill {
+  background: linear-gradient(180deg, #ff9d7a 0%, #e24b4a 45%, #9c2a29 100%);
+  box-shadow: 0 0 10px 1px rgba(226, 75, 74, 0.6);
+}
+
+.mana-fill {
+  background: linear-gradient(180deg, #9adcff 0%, #2f8fd4 45%, #1c5a8c 100%);
+  box-shadow: 0 0 10px 1px rgba(47, 143, 212, 0.65);
+}
+
+.xp-fill {
+  background: linear-gradient(180deg, #ffe27a 0%, #d4af37 45%, #8a6d1f 100%);
+  box-shadow: 0 0 8px 1px rgba(212, 175, 55, 0.5);
+}
+.xp-fill::after {
+  animation-duration: 4s;
+}
+
+#xpGroup .bar-track {
+  width: 90px;
+}
+
+/* subtle ambient pulse on the HP gem, purely decorative */
+#hpBarInner {
+  animation: hpPulse 2.4s ease-in-out infinite;
+}
+@keyframes hpPulse {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.12);
+  }
+}
+
+/* ============ GOLD MEDALLION ============ */
+
+#goldGroup {
+  margin-left: auto;
+  padding-right: 4px;
+}
+
+.gold-icon {
+  font-size: 17px;
+  filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.7));
+}
+
+#goldText {
+  font-family: "Cinzel", serif;
+  font-weight: 700;
+  color: #ffe27a;
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.55);
+  font-size: 14px;
+}
+
+/* ============ CANVAS ============ */
+
+#gameWrap {
+  position: relative;
+  border: 2px solid #3c3428;
+  border-radius: 8px;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.6),
+    inset 0 0 60px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+canvas {
+  display: block;
+  image-rendering: pixelated;
+  background: #000;
+}
+
+#hint {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  color: #8a8578;
+  font-size: 11.5px;
+  width: 800px;
+  max-width: 96vw;
+  text-align: center;
+}
+
+#hint kbd {
+  background: #2a271f;
+  border: 1px solid #4a4536;
+  border-radius: 3px;
+  padding: 1px 5px;
+  color: #e8e4d8;
+  font-family: monospace;
+}
+
+@media (max-width: 760px) {
+  #hint {
+    display: none;
+  }
+  #hud {
+    flex-wrap: wrap;
+    height: auto;
+    row-gap: 8px;
+  }
+  .stat-group {
+    padding: 0 8px;
+  }
+  #game {
+    width: 96vw;
+    height: calc(96vw * 0.72);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar-fill::after,
+  #hpBarInner {
+    animation: none !important;
+  }
+}

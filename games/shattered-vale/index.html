@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Shattered Vale RPG Game</title>
+<link rel="stylesheet" href="css/style.css" />
+<link rel="shortcut icon" href="icons/favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+  <div id="hud">
+    <div class="stat-group" id="hpGroup">
+      <div class="stat-icon">❤️</div>
+      <div class="bar-track"><div class="bar-fill hp-fill" id="hpBarInner"></div></div>
+      <span class="stat-text" id="hpText">150/150</span>
+    </div>
+    <div class="stat-group" id="manaGroup">
+      <div class="stat-icon">🌀</div>
+      <div class="bar-track"><div class="bar-fill mana-fill" id="manaBarInner"></div></div>
+      <span class="stat-text" id="manaText">100/100</span>
+    </div>
+    <div class="stat-group" id="xpGroup">
+      <div class="stat-icon">⭐</div>
+      <span class="stat-label">Lv <span id="lvlText">1</span></span>
+      <div class="bar-track"><div class="bar-fill xp-fill" id="xpBarInner"></div></div>
+      <span class="stat-text" id="xpText">0 / 10 Exp</span>
+    </div>
+    <div class="stat-group" id="goldGroup">
+      <span class="gold-icon">🪙</span>
+      <span class="stat-text" id="goldText">0</span>
+    </div>
+  </div>
+
+  <div id="gameWrap">
+    <canvas id="game" width="960" height="600"></canvas>
+  </div>
+
+  <!-- utils first: shared math/canvas helpers nearly everything depends on -->
+  <script src="js/utils.js"></script>
+
+  <!-- config: pure data, no dependencies -->
+  <script src="js/config/balance.js"></script>
+  <script src="js/config/level-layout.js"></script>
+  <script src="js/config/item-effects.js"></script>
+  <script src="js/config/item-stats.js"></script>
+
+  <!-- sprites: builder functions, then the registry that calls them -->
+  <script src="js/sprites/humanoid-sprites.js"></script>
+  <script src="js/sprites/monster-sprites.js"></script>
+  <script src="js/sprites/molten-sprites.js"></script>
+  <script src="js/sprites/icon-sprites.js"></script>
+  <script src="js/sprites/sprites.js"></script>
+
+  <!-- world: builder + renderer, then the TileMap class that composes them -->
+  <script src="js/world/tilemap-builder.js"></script>
+  <script src="js/world/tilemap-renderer.js"></script>
+  <script src="js/world/tilemap.js"></script>
+
+  <!-- entities -->
+  <script src="js/entities/animated-sprite.js"></script>
+  <script src="js/entities/player.js"></script>
+  <script src="js/entities/npc.js"></script>
+  <script src="js/entities/enemy.js"></script>
+  <script src="js/entities/fireball.js"></script>
+
+  <!-- systems -->
+  <script src="js/systems/camera.js"></script>
+  <script src="js/systems/particles.js"></script>
+  <script src="js/systems/dialogue.js"></script>
+  <script src="js/systems/inventory.js"></script>
+
+  <!-- ui -->
+  <script src="js/ui/hud.js"></script>
+  <script src="js/ui/screens.js"></script>
+
+  <!-- core: input, world assembly, combat resolution, then the orchestrator -->
+  <script src="js/core/input.js"></script>
+  <script src="js/core/world-factory.js"></script>
+  <script src="js/core/combat.js"></script>
+  <script src="js/core/game.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,3 @@
+[submodule "atom"]
+	path = atom
+	url = git://github.com/dommmel/atom.git

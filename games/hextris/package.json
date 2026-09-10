@@ -1,0 +1,10 @@
+{
+  "name": "hextris-game",
+  "version": "1.0.0",
+  "description": "Hextris - addictive puzzle game inspired by Tetris, deployed on Cloudflare Pages",
+  "scripts": {
+    "dev": "wrangler pages dev . --port=8790",
+    "preview": "npx serve . --port=3003"
+  },
+  "license": "GPL-3.0"
+}
