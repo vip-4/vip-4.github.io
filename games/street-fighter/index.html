@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Street Fighter Clone</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css?v=20260213g">
+</head>
+
+<body>
+    <div id="game-container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="start-screen">
+            <h1 class="start-title">STREET FIGHTER</h1>
+            <p class="start-subtitle">Arcade Duel</p>
+            <div class="login-card">
+                <label for="player1-input">Player 1 Name</label>
+                <input id="player1-input" class="arcade-input" type="text" maxlength="12" placeholder="Player 1" value="Player 1">
+                <label for="player2-input">Player 2 Name</label>
+                <input id="player2-input" class="arcade-input" type="text" maxlength="12" placeholder="Player 2" value="Player 2">
+                <p id="start-error" class="start-error" aria-live="polite"></p>
+                <button id="start-button" class="arcade-btn">FIGHT!</button>
+                <p class="start-help">Press Enter to start</p>
+            </div>
+            <div class="controls-card">
+                <p>P1: A / D move, W jump, Space attack</p>
+                <p>P2: ← / → move, ↑ jump, ↓ attack</p>
+            </div>
+        </div>
+
+        <!-- UI Overlay -->
+        <div id="ui-layer">
+            <!-- Health Bars -->
+            <div id="health-bars">
+                <div class="player-health">
+                    <div class="health-bar-container">
+                        <div id="player-health-bar" class="health-fill" style="width: 100%;"></div>
+                    </div>
+                    <div id="player-name-label" class="player-name">Player 1</div>
+                    <div id="player-score" class="score-label">Rounds: 0</div>
+                </div>
+                <div class="center-hud">
+                    <div id="round-indicator" class="round-indicator">ROUND 1</div>
+                    <div id="timer">60</div>
+                </div>
+                <div class="enemy-health">
+                    <div class="health-bar-container">
+                        <div id="enemy-health-bar" class="health-fill" style="width: 100%;"></div>
+                    </div>
+                    <div id="enemy-name-label" class="player-name">Player 2</div>
+                    <div id="enemy-score" class="score-label">Rounds: 0</div>
+                </div>
+            </div>
+            <button id="music-toggle" class="arcade-mini-btn" type="button">Music: ON</button>
+            <div id="combo-announcer" class="combo-announcer"></div>
+
+            <!-- Result / Menu Screen -->
+            <div id="display-text" style="display: none; flex-direction: column; align-items: center;">
+                <div id="winner-text" style=" margin-bottom: 20px;">Tie</div>
+                <button id="restart-button" class="arcade-btn">RESTART</button>
+            </div>
+        </div>
+
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"
+        integrity="sha512-H6cPm97FAsgCKt2b4ZC8972TRk3k+Ln4hPBjFE4501PV5CHnm1rHunAZuJBrtFX75oU8DaS6fBNmJ1iHq5cmDw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="javascript/utils.js?v=20260213g"></script>
+    <script src="javascript/Sprite.js?v=20260213g"></script>
+    <script src="javascript/Fighter.js?v=20260213g"></script>
+    <script src="javascript/script.js?v=20260213g"></script>
+</body>
+
+</html>
