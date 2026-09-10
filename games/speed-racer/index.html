@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speed Racer - Professional Car Racing Game</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1>🏎️ SPEED RACER</h1>
+            <div class="game-stats">
+                <div class="stat">
+                    <span class="label">Speed:</span>
+                    <span id="speed-display">0</span>
+                    <span class="unit">km/h</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Lap:</span>
+                    <span id="lap-display">1</span>
+                    <span class="unit">/ 3</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Time:</span>
+                    <span id="time-display">00:00</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Best:</span>
+                    <span id="best-time">--:--</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="game-area">
+            <canvas id="gameCanvas" width="1000" height="600"></canvas>
+            
+            <div class="game-controls">
+                <div class="control-info">
+                    <h3>🎮 Controls</h3>
+                    <div class="controls-grid">
+                        <div class="control">
+                            <span class="key">↑ / W</span>
+                            <span>Accelerate</span>
+                        </div>
+                        <div class="control">
+                            <span class="key">↓ / S</span>
+                            <span>Brake</span>
+                        </div>
+                        <div class="control">
+                            <span class="key">← / A</span>
+                            <span>Turn Left</span>
+                        </div>
+                        <div class="control">
+                            <span class="key">→ / D</span>
+                            <span>Turn Right</span>
+                        </div>
+                        <div class="control">
+                            <span class="key">SPACE</span>
+                            <span>Restart</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="car-selection">
+                    <h3>🚗 Select Car</h3>
+                    <div class="car-options">
+                        <button class="car-btn active" data-car="0">Sport Car</button>
+                        <button class="car-btn" data-car="1">Race Car</button>
+                        <button class="car-btn" data-car="2">Classic Car</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-overlay" id="gameOverlay">
+            <div class="overlay-content">
+                <h2 id="overlayTitle">Race Complete! 🏁</h2>
+                <p id="overlayMessage">Great job!</p>
+                <div class="overlay-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Final Time:</span>
+                        <span id="finalTime">00:00</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Average Speed:</span>
+                        <span id="avgSpeed">0 km/h</span>
+                    </div>
+                </div>
+                <button id="restartBtn" class="restart-btn">🏎️ Race Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced script loader with dependency management
+        console.log('🔧 Starting Speed Racer...');
+        
+        let scriptsLoaded = {
+            car: false,
+            track: false,
+            game: false
+        };
+        
+        function checkAllLoaded() {
+            if (scriptsLoaded.car && scriptsLoaded.track && scriptsLoaded.game) {
+                console.log('✅ All scripts loaded, initializing game...');
+                initializeGame();
+            }
+        }
+        
+        function loadScript(src, name) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = () => {
+                    console.log(`✅ ${src} loaded successfully`);
+                    scriptsLoaded[name] = true;
+                    resolve();
+                    checkAllLoaded();
+                };
+                script.onerror = (error) => {
+                    console.error(`❌ Failed to load ${src}:`, error);
+                    reject(error);
+                };
+                document.head.appendChild(script);
+            });
+        }
+        
+        function initializeGame() {
+            try {
+                console.log('🎮 Initializing game...');
+                
+                // Check if classes are available
+                if (typeof Car === 'undefined') {
+                    throw new Error('Car class not found');
+                }
+                if (typeof Track === 'undefined') {
+                    throw new Error('Track class not found');
+                }
+                if (typeof Game === 'undefined') {
+                    throw new Error('Game class not found');
+                }
+                
+                console.log('🚗 Car class:', Car);
+                console.log('🛣️ Track class:', Track);
+                console.log('🎮 Game class:', Game);
+                
+                // Initialize the game
+                const game = new Game();
+                console.log('🏁 Game initialized successfully!');
+                
+            } catch (error) {
+                console.error('❌ Failed to initialize game:', error);
+                
+                // Show error message to user
+                document.body.innerHTML += `
+                    <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                                background: #ff3333; color: white; padding: 20px; border-radius: 10px; 
+                                font-family: Arial; text-align: center; z-index: 9999;">
+                        <h2>🚨 Game Loading Error</h2>
+                        <p>There was an error loading the game:</p>
+                        <p style="font-family: monospace; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px;">
+                            ${error.message}
+                        </p>
+                        <p>Please check the browser console for more details.</p>
+                        <button onclick="window.location.reload()" style="background: #ff6b00; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                            🔄 Reload Game
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        // Load scripts in sequence
+        console.log('📜 Loading game scripts...');
+        loadScript('car.js', 'car')
+            .then(() => loadScript('track.js', 'track'))
+            .then(() => loadScript('game.js', 'game'))
+            .catch(error => {
+                console.error('❌ Script loading chain failed:', error);
+            });
+    </script>
+</body>
+</html> 

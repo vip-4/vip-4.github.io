@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="game-info">
+            <h1>TETRIS</h1>
+            <div class="score-display">
+                <p>Score: <span id="score">0</span></p>
+                <p>Lines: <span id="lines">0</span></p>
+                <p>Level: <span id="level">1</span></p>
+            </div>
+            <div class="next-piece">
+                <p>Next:</p>
+                <canvas id="next" width="100" height="100"></canvas>
+            </div>
+            <div class="controls">
+                <p>Controls:</p>
+                <p>← → : Move</p>
+                <p>↑ : Rotate</p>
+                <p>↓ : Soft Drop</p>
+                <p>Space : Hard Drop</p>
+                <p>P : Pause</p>
+            </div>
+            <button id="start-button">Start/Pause</button>
+        </div>
+        <canvas id="tetris" width="240" height="400"></canvas>
+    </div>
+    <script src="tetris.js"></script>
+
+    <!-- Script do Vercel Analytics -->
+</body>
+
+</html>
