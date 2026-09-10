@@ -1,0 +1,44 @@
+{
+  "name": "Word Survivor",
+  "short_name": "WordSurv",
+  "description": "Type words to survive! A viral typing roguelike game.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f4f1e8",
+  "theme_color": "#f4f1e8",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect fill='%23f4f1e8' width='512' height='512' rx='64'/%3E%3Crect fill='%231a1714' x='40' y='40' width='432' height='432' rx='48'/%3E%3Ctext x='256' y='200' text-anchor='middle' font-family='Courier New, monospace' font-size='80' font-weight='bold' fill='%23f4f1e8'%3EWORD%3C/text%3E%3Ctext x='256' y='320' text-anchor='middle' font-family='Courier New, monospace' font-size='60' font-weight='bold' fill='%23c41e3a'%3ESURVIVOR%3C/text%3E%3Crect x='216' y='370' width='80' height='60' rx='8' fill='%232a2520'/%3E%3Crect x='220' y='374' width='72' height='20' rx='4' fill='%233d3830'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect fill='%23f4f1e8' width='192' height='192' rx='24'/%3E%3Crect fill='%231a1714' x='16' y='16' width='160' height='160' rx='16'/%3E%3Ctext x='96' y='75' text-anchor='middle' font-family='Courier New, monospace' font-size='30' font-weight='bold' fill='%23f4f1e8'%3EWORD%3C/text%3E%3Ctext x='96' y='115' text-anchor='middle' font-family='Courier New, monospace' font-size='20' font-weight='bold' fill='%23c41e3a'%3ESURVIVOR%3C/text%3E%3Crect x='76' y='135' width='40' height='30' rx='4' fill='%232a2520'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Play Now",
+      "short_name": "Play",
+      "description": "Start a new game",
+      "url": "/",
+      "icons": []
+    },
+    {
+      "name": "Daily Challenge",
+      "short_name": "Daily",
+      "description": "Play today's challenge",
+      "url": "/#daily",
+      "icons": []
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
