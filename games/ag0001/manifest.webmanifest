@@ -1,0 +1,9 @@
+{
+  "name": "AxonOS AG0001 — Chronos Boundary Flight",
+  "short_name": "AG0001 Chronos",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#050608",
+  "theme_color": "#050608",
+  "description": "Local-only browser game about cognitive sovereignty, typed intent, and neural permissions."
+}

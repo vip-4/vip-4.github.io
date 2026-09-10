@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Cyber Runner - Endless Runner Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+        
+        <!-- Start Menu -->
+        <div id="start-menu" class="menu">
+            <h1 class="game-title">CYBER<span class="neon-pink">RUNNER</span></h1>
+            <div class="high-score">HIGH SCORE: <span id="high-score-display">0</span></div>
+            <button id="play-button" class="neon-button">PLAY</button>
+            <div class="controls-info">
+                <p>SPACEBAR or TAP to jump</p>
+                <p>Hold for higher jump</p>
+            </div>
+        </div>
+        
+        <!-- Game Over Screen -->
+        <div id="game-over" class="menu hidden">
+            <h1 class="game-title">GAME <span class="neon-pink">OVER</span></h1>
+            <div class="final-score">SCORE: <span id="final-score">0</span></div>
+            <div class="high-score">HIGH SCORE: <span id="game-over-high-score">0</span></div>
+            <button id="restart-button" class="neon-button">RESTART</button>
+        </div>
+        
+        <!-- HUD -->
+        <div id="hud" class="hidden">
+            <div class="hud-item">
+                <span class="hud-label">SCORE</span>
+                <span id="score-display" class="hud-value">0</span>
+            </div>
+            <div class="hud-item">
+                <span class="hud-label">SPEED</span>
+                <span id="speed-display" class="hud-value">1.0x</span>
+            </div>
+        </div>
+        
+        <!-- Mute Button (separate from HUD) -->
+        <button id="mute-button" class="mute-btn hidden">🔊</button>
+    </div>
+
+    <!-- Game Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/assets.js"></script>
+    <script src="js/physics.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/world.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/game.js"></script>
+    <script>
+        // Initialize game when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            const game = new Game('game-canvas');
+            window.game = game; // Expose for debugging
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="ChiliPop - A retro-cute SameGame puzzle game with chili peppers">
+  <meta name="theme-color" content="#0f0e17">
+  <title>ChiliPop</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23ff4444' rx='3'/><text x='8' y='13' font-size='12' text-anchor='middle' fill='white'>C</text></svg>">
+</head>
+<body>
+  <canvas id="game"></canvas>
+  <script type="module">
+    import { Game } from './js/main.js';
+    const canvas = document.getElementById('game');
+    const game = new Game(canvas);
+    game.loop();
+  </script>
+</body>
+</html>

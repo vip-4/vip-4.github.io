@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-label="AxonOS AG0001 Chronos Boundary Flight preview">
+  <defs>
+    <radialGradient id="g" cx="50%" cy="55%" r="70%">
+      <stop offset="0" stop-color="#1b2229"/>
+      <stop offset="0.5" stop-color="#090b0f"/>
+      <stop offset="1" stop-color="#050608"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" x2="1">
+      <stop offset="0" stop-color="#d8dee7"/>
+      <stop offset="1" stop-color="#c8a96a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="640" fill="url(#g)"/>
+  <g opacity="0.16" stroke="#d8dee7">
+    <circle cx="640" cy="510" r="170" fill="none"/>
+    <circle cx="640" cy="510" r="280" fill="none"/>
+    <circle cx="640" cy="510" r="390" fill="none"/>
+    <path d="M0 120H1280M0 220H1280M0 320H1280M0 420H1280M0 520H1280"/>
+  </g>
+  <g transform="translate(640 380)">
+    <path d="M0-88 54 70 0 37-54 70Z" fill="url(#gold)" stroke="#eef2f6" stroke-width="3"/>
+    <ellipse cx="0" cy="-18" rx="15" ry="40" fill="#c8a96a" opacity="0.75"/>
+    <path d="M-20 92Q0 150 20 92" fill="none" stroke="#c8a96a" stroke-width="14" stroke-linecap="round" opacity="0.55"/>
+  </g>
+  <g font-family="Inter, Segoe UI, sans-serif" fill="#eef2f6">
+    <text x="72" y="88" font-size="24" letter-spacing="4" opacity="0.7">AXONOS-BCI / AG0001</text>
+    <text x="72" y="154" font-size="58" font-weight="700">Chronos Boundary Flight</text>
+    <text x="72" y="206" font-size="25" fill="#bac3cf">Fly upward. Preserve the boundary. Release typed intent, never raw signal.</text>
+    <text x="72" y="546" font-size="20" fill="#c8a96a">NO TELEMETRY · NO REAL NEURAL DATA · LOCAL-ONLY GAME</text>
+  </g>
+  <g font-family="SFMono-Regular, Consolas, monospace" font-size="18" fill="#bac3cf">
+    <text x="880" y="110">BOUNDARY 100</text>
+    <text x="880" y="145">VAULT    100</text>
+    <text x="880" y="180">CONSENT  100</text>
+    <text x="880" y="215">LATENCY  010</text>
+  </g>
+  <g fill="none" stroke-width="4">
+    <rect x="860" y="286" width="160" height="54" rx="22" stroke="#83d9b5" opacity="0.8"/>
+    <path d="M1030 350 1090 300 1150 350 1090 400Z" stroke="#e56f6f" opacity="0.85"/>
+    <path d="M830 458Q940 398 1050 458T1270 458" stroke="#c85cff" opacity="0.65"/>
+  </g>
+</svg>
