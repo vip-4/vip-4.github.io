@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Surge: Dopamine Loop - Reflex Arcade | Free Browser Game</title>
+    <link rel="stylesheet" href="style.css?v=2">
+</head>
+
+<body>
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="start-screen" class="visible">
+        <div class="start-content">
+            <h1 class="game-title">NEON SURGE<br><span class="subtitle">DOPAMINE LOOP</span></h1>
+            <button id="start-btn">START GAME</button>
+        </div>
+    </div>
+
+    <div id="game-over-screen">
+        <div class="start-content">
+            <h1 class="game-title">GAME OVER<br><span id="final-level" class="subtitle">LEVEL 1</span></h1>
+            <button id="menu-btn">MAIN MENU</button>
+        </div>
+    </div>
+
+    <div id="damage-vignette"></div>
+
+    <div id="game-ui">
+        <div id="hp-container" class="ui-container top-left">
+            <div class="ui-label label-hp">HP</div>
+            <div id="hp-bar-bg" class="ui-bar-bg">
+                <div id="hp-bar-fill" class="ui-bar-fill hp-fill-color"></div>
+                <div id="hp-text" class="ui-bar-text">100 / 100</div>
+            </div>
+        </div>
+
+        <div id="xp-container" class="ui-container top-right">
+            <div id="level-text" class="ui-label label-xp">LVL 1</div>
+            <div id="xp-bar-bg" class="ui-bar-bg">
+                <div id="xp-bar-fill" class="ui-bar-fill xp-fill-color"></div>
+                <div id="xp-text" class="ui-bar-text">0%</div>
+            </div>
+        </div>
+
+        <div id="level-up-overlay">
+            <h2 class="overlay-title">LEVEL UP! Choose an Upgrade:</h2>
+            <div id="upgrade-choices">
+                <!-- Upgrade cards will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="src/main.js?v=2"></script>
+</body>
+
+</html>

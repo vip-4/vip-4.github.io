@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#0a0c0f" />
+  <title>Search Strike Extract - Word Search Battle | Free Browser Game</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <canvas id="game"></canvas>
+  <div id="ui-root"></div>
+  <!-- hidden probe: exposes CSS env(safe-area-inset-*) to JS for notch-safe HUD -->
+  <div id="safe-probe"></div>
+
+  <!-- engine -->
+  <script src="js/core.js"></script>
+  <!-- localization (en / zh) -->
+  <script src="js/i18n.js"></script>
+  <!-- data -->
+  <script src="js/data.js"></script>
+  <!-- procedural art (Clawd sprites + DOM icons) -->
+  <script src="js/sprites.js"></script>
+  <!-- world -->
+  <script src="js/world.js"></script>
+  <!-- entities -->
+  <script src="js/entities.js"></script>
+  <!-- meta / persistence -->
+  <script src="js/meta.js"></script>
+  <!-- raid controller -->
+  <script src="js/raid.js"></script>
+  <!-- ui screens -->
+  <script src="js/ui.js"></script>
+  <!-- bootstrap -->
+  <script src="js/main.js"></script>
+</body>
+</html>

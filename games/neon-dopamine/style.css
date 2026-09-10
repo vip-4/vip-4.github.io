@@ -1,0 +1,362 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color: black;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #E0FFFF;
+    /* General neon text color */
+}
+
+canvas {
+    display: block;
+    background-color: black;
+    position: fixed;
+    top: 0;
+    left: 0;
+    /* Neon glow effect for the canvas */
+    box-shadow: 0 0 15px #00FFFF,
+        0 0 30px #FF00FF,
+        0 0 45px #39FF14;
+}
+
+#game-ui {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    /* Allows clicks to pass through */
+    z-index: 100;
+}
+
+#damage-vignette {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 50;
+    /* Below UI but above canvas */
+    background: radial-gradient(circle, transparent 60%, rgba(255, 0, 0, 0.4) 100%);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+@keyframes pulseVignette {
+    0% {
+        opacity: 0.2;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+
+    100% {
+        opacity: 0.2;
+    }
+}
+
+.critical-health {
+    animation: pulseVignette 1s infinite;
+}
+
+.ui-container {
+    position: absolute;
+    top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 100;
+}
+
+.top-left {
+    left: 30px;
+}
+
+.top-right {
+    right: 30px;
+}
+
+.ui-label {
+    font-size: 2em;
+    font-weight: 900;
+    font-family: 'Courier New', Courier, monospace;
+    display: flex;
+    align-items: center;
+}
+
+.label-hp {
+    color: #FF00FF;
+    text-shadow: 0 0 10px #FF00FF, 0 0 20px #FF00FF;
+}
+
+.label-xp {
+    color: #39FF14;
+    text-shadow: 0 0 10px #39FF14, 0 0 20px #39FF14;
+}
+
+.ui-bar-bg {
+    width: 250px;
+    height: 25px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid #00FFFF;
+    box-shadow: 0 0 10px #00FFFF, inset 0 0 10px #00FFFF;
+    border-radius: 4px;
+    /* Slightly sharp edges for synthwave */
+    position: relative;
+    transform: skewX(-15deg);
+    /* Cyberpunk/Synthwave slant */
+    overflow: hidden;
+}
+
+.ui-bar-fill {
+    height: 100%;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hp-fill-color {
+    width: 100%;
+    background: linear-gradient(90deg, #FF00FF, #FF1493);
+    box-shadow: 0 0 15px #FF00FF;
+}
+
+.xp-fill-color {
+    width: 0%;
+    background: linear-gradient(90deg, #39FF14, #00FF00);
+    box-shadow: 0 0 15px #39FF14;
+}
+
+.ui-bar-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) skewX(15deg);
+    /* Un-skew the text */
+    color: #E0FFFF;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-shadow: 2px 2px 0px #000, 0 0 10px #FF00FF;
+    white-space: nowrap;
+}
+
+#level-up-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s, opacity 0.3s ease-in-out;
+    pointer-events: none;
+    /* Allow mouse events to pass when hidden */
+}
+
+#level-up-overlay.visible {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: all;
+    /* Block mouse events when visible */
+}
+
+.upgrade-card {
+    background-color: rgba(0, 0, 0, 0.9);
+    border: 2px solid #FF00FF;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 15px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 0 15px #FF00FF;
+    transition: all 0.2s ease-in-out;
+    width: 250px;
+    pointer-events: auto;
+    /* Ensure cards are clickable */
+}
+
+.upgrade-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 0 25px #00FFFF, 0 0 15px #FF00FF;
+}
+
+.upgrade-card h3 {
+    color: #00FFFF;
+    margin-top: 0;
+    font-size: 1.5em;
+    text-shadow: 0 0 8px #00FFFF;
+}
+
+.upgrade-card p {
+    color: #E0FFFF;
+    font-size: 1em;
+}
+
+#upgrade-choices {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 50px;
+}
+
+h2.overlay-title {
+    color: #39FF14;
+    font-size: 3em;
+    text-shadow: 0 0 15px #39FF14, 0 0 25px #FF00FF;
+    margin-bottom: 30px;
+}
+
+#start-screen, #game-over-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, #1b002c 0%, #000000 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out, visibility 0.5s;
+    overflow: hidden;
+}
+
+#start-screen::before, #game-over-screen::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        linear-gradient(transparent 95%, rgba(255, 0, 255, 0.4) 95%),
+        linear-gradient(90deg, transparent 95%, rgba(0, 255, 255, 0.4) 95%);
+    background-size: 50px 50px;
+    animation: gridMove 3s linear infinite;
+    z-index: 0;
+    perspective: 500px;
+    transform: perspective(500px) rotateX(60deg) translateY(100px) scale(3);
+    transform-origin: bottom;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+@keyframes gridMove {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 0 50px;
+    }
+}
+
+#start-screen.visible, #game-over-screen.visible {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: all;
+}
+
+.start-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 50px;
+    background: rgba(10, 0, 20, 0.8);
+    border: 3px solid #00FFFF;
+    box-shadow: 0 0 30px #00FFFF, inset 0 0 30px #FF00FF;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    animation: floatPanel 4s ease-in-out infinite;
+}
+
+@keyframes floatPanel {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.game-title {
+    font-family: 'Arial Black', sans-serif;
+    font-size: 5rem;
+    color: #FF00FF;
+    text-shadow: 0 0 10px #FF00FF, 0 0 20px #FF00FF, 0 0 40px #FF00FF;
+    margin: 0 0 30px 0;
+    line-height: 1.1;
+    font-weight: 900;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    font-style: italic;
+}
+
+.game-title .subtitle {
+    font-size: 2.5rem;
+    color: #00FFFF;
+    text-shadow: 0 0 10px #00FFFF, 0 0 20px #00FFFF, 0 0 30px #00FFFF;
+    letter-spacing: 4px;
+    display: block;
+    margin-top: 10px;
+}
+
+#start-btn, #menu-btn {
+    background: linear-gradient(45deg, #110022, #2b0055);
+    color: #39FF14;
+    font-size: 2rem;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+    padding: 20px 50px;
+    border: 3px solid #39FF14;
+    border-radius: 10px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    box-shadow: 0 0 15px #39FF14, inset 0 0 15px #39FF14;
+    transition: all 0.3s ease;
+    outline: none;
+    position: relative;
+    overflow: hidden;
+    pointer-events: auto;
+}
+
+#start-btn::before, #menu-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(57, 255, 20, 0.5), transparent);
+    transition: left 0.5s ease;
+}
+
+#start-btn:hover, #menu-btn:hover {
+    background: rgba(57, 255, 20, 0.15);
+    box-shadow: 0 0 30px #39FF14, inset 0 0 30px #39FF14, 0 0 60px #39FF14;
+    transform: scale(1.05);
+    color: #FFF;
+    text-shadow: 0 0 10px #39FF14;
+}
+
+#start-btn:hover::before, #menu-btn:hover::before {
+    left: 100%;
+}
+
+#start-btn:active, #menu-btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 0 10px #39FF14, inset 0 0 10px #39FF14;
+}
