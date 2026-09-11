@@ -1,0 +1,11 @@
+{
+  "name": "Space Shooter — BodhiProtocol",
+  "short_name": "Space Shooter",
+  "description": "Top-down space shooter. Waves, power-ups, boss fights.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#050510",
+  "theme_color": "#050510",
+  "orientation": "portrait",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

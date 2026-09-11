@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- ========================= -->
+  <!-- BASIC META -->
+  <!-- ========================= -->
+
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no"
+  />
+
+  <!-- ========================= -->
+  <!-- TITLE -->
+  <!-- ========================= -->
+
+  <title>
+    Star Game — Cosmic Reflex Challenge | Muhammad Yasir
+  </title>
+
+  <!-- ========================= -->
+  <!-- SEO META TAGS -->
+  <!-- ========================= -->
+
+  <meta
+    name="description"
+    content="Star Game is a modern advanced browser arcade game developed by Muhammad Yasir using HTML, CSS, and JavaScript. Experience fast reflex gameplay, animated UI, power-ups, bombs, leaderboard systems, sound effects, responsive design, and futuristic gaming visuals in this interactive frontend web game project."
+  />
+
+  <meta
+    name="keywords"
+    content="
+      Muhammad Yasir,
+      Star Game,
+      JavaScript Game,
+      HTML CSS JavaScript Project,
+      Frontend Game Development,
+      Browser Arcade Game,
+      Responsive Web Game,
+      Cosmic Reflex Game,
+      Vanilla JavaScript Game,
+      Gaming UI Design,
+      Web Developer Portfolio,
+      Frontend Developer Pakistan,
+      JavaScript Arcade Project,
+      Animated Web Game,
+      Full Stack Developer,
+      Reflex Challenge Game,
+      Open Source Game,
+      Interactive Web App,
+      Modern UI Game,
+      HTML5 Game
+    "
+  />
+
+  <meta name="author" content="Muhammad Yasir" />
+
+  <meta name="robots" content="index, follow" />
+
+  <meta name="language" content="English" />
+
+  <meta name="revisit-after" content="7 days" />
+
+  <!-- ========================= -->
+  <!-- THEME -->
+  <!-- ========================= -->
+
+  <meta name="theme-color" content="#7B2FF7" />
+  <meta name="msapplication-navbutton-color" content="#7B2FF7" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <!-- ========================= -->
+  <!-- OPEN GRAPH -->
+  <!-- ========================= -->
+
+  <meta property="og:type" content="website" />
+
+  <meta
+    property="og:title"
+    content="Star Game — Advanced JavaScript Arcade Game | Muhammad Yasir"
+  />
+
+  <meta
+    property="og:description"
+    content="A modern browser-based arcade game built using HTML, CSS, and Vanilla JavaScript with advanced gameplay systems, animated UI, responsive design, leaderboard, power-ups, bombs, and immersive visual effects."
+  />
+
+  <meta property="og:image" content="image/icon.jpeg" />
+
+  <meta property="og:url" content="https://cyberpunkslotgame.pages.dev/games/star-game/" />
+
+  <meta property="og:site_name" content="Star Game" />
+
+  <!-- ========================= -->
+  <!-- TWITTER META -->
+  <!-- ========================= -->
+
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <meta
+    name="twitter:title"
+    content="Star Game — Cosmic Reflex Challenge"
+  />
+
+  <meta
+    name="twitter:description"
+    content="Advanced browser arcade game created by Muhammad Yasir using HTML, CSS, and JavaScript."
+  />
+
+  <meta name="twitter:image" content="image/icon.jpeg" />
+
+  <!-- ========================= -->
+  <!-- FAVICON / ICONS -->
+  <!-- ========================= -->
+<link rel="icon" href="icon.jpeg" type="image/jpeg" />
+
+
+  <!-- ========================= -->
+  <!-- PRELOAD / PERFORMANCE -->
+  <!-- ========================= -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  />
+
+  <!-- ========================= -->
+  <!-- GOOGLE FONTS -->
+  <!-- ========================= -->
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- ========================= -->
+  <!-- STYLESHEET -->
+  <!-- ========================= -->
+
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- ========================= -->
+  <!-- CANONICAL -->
+  <!-- ========================= -->
+
+  <link rel="canonical" href="https://cyberpunkslotgame.pages.dev/games/star-game/" />
+
+  <!-- ========================= -->
+  <!-- STRUCTURED DATA -->
+  <!-- ========================= -->
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "Star Game",
+    "author": {
+      "@type": "Person",
+      "name": "Muhammad Yasir"
+    },
+    "description": "Star Game is an advanced browser-based arcade reflex game built with HTML, CSS, and Vanilla JavaScript featuring stars, bombs, power-ups, levels, responsive UI, and animated gameplay.",
+    "applicationCategory": "Game",
+    "genre": [
+      "Arcade",
+      "Action",
+      "Reflex"
+    ],
+    "operatingSystem": "Web Browser",
+    "gamePlatform": "Web",
+    "programmingLanguage": [
+      "HTML",
+      "CSS",
+      "JavaScript"
+    ]
+  }
+  </script>
+
+</head>
+
+<body>
+
+  <!-- ===== FLOATING PARTICLES BACKGROUND ===== -->
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- ===== START SCREEN ===== -->
+  <div id="startScreen" class="screen active">
+    <div class="screen-content">
+
+      <div class="logo-wrap">
+        <span class="logo-star">★</span>
+        <h1 class="game-title">STAR GAME</h1>
+        <span class="logo-star">★</span>
+      </div>
+
+      <p class="tagline">
+        Cosmic Reflex Challenge
+      </p>
+
+      <div class="highscore-preview">
+        <span class="hs-label">BEST SCORE</span>
+        <span id="startHighScore">0</span>
+      </div>
+
+      <div class="difficulty-select">
+
+        <p class="section-label">
+          SELECT DIFFICULTY
+        </p>
+
+        <div class="diff-buttons">
+          <button class="diff-btn active" data-diff="easy">
+            EASY
+          </button>
+
+          <button class="diff-btn" data-diff="medium">
+            MEDIUM
+          </button>
+
+          <button class="diff-btn" data-diff="hard">
+            HARD
+          </button>
+        </div>
+
+      </div>
+
+      <button id="startBtn" class="btn-primary pulse-btn">
+        ▶ START GAME
+      </button>
+
+      <div class="instructions">
+        <p>
+          ⭐ Click stars to score &nbsp;|&nbsp;
+          💣 Avoid bombs &nbsp;|&nbsp;
+          ⚡ Grab power-ups
+        </p>
+
+        <p>
+          Miss a click = lose a life &nbsp;|&nbsp;
+          Level up every 10 pts
+        </p>
+      </div>
+
+      <button id="leaderboardBtn" class="btn-secondary">
+        🏆 LEADERBOARD
+      </button>
+
+    </div>
+  </div>
+
+  <!-- ===== GAME SCREEN ===== -->
+  <div id="gameScreen" class="screen">
+
+    <!-- HUD TOP -->
+    <div id="hud">
+
+      <div class="hud-block">
+        <span class="hud-label">SCORE</span>
+        <span id="scoreDisplay" class="hud-value">0</span>
+      </div>
+
+      <div class="hud-block">
+        <span class="hud-label">LEVEL</span>
+        <span id="levelDisplay" class="hud-value">1</span>
+      </div>
+
+      <div class="hud-block hud-center">
+        <span id="timerDisplay" class="hud-timer">30</span>
+      </div>
+
+      <div class="hud-block">
+        <span class="hud-label">LIVES</span>
+        <span id="livesDisplay" class="hud-value">❤️❤️❤️</span>
+      </div>
+
+      <div class="hud-block">
+        <span class="hud-label">BEST</span>
+        <span id="highScoreDisplay" class="hud-value">0</span>
+      </div>
+
+    </div>
+
+    <!-- ACTIVE POWERUP INDICATOR -->
+    <div id="powerupIndicator" class="powerup-indicator hidden"></div>
+
+    <!-- GAME AREA -->
+    <div id="gameArea">
+      <!-- JS GENERATED OBJECTS -->
+    </div>
+
+    <!-- CONTROLS -->
+    <div id="gameControls">
+
+      <button id="pauseBtn" class="ctrl-btn">
+        ⏸ PAUSE
+      </button>
+
+      <span id="diffBadge" class="diff-badge">
+        EASY
+      </span>
+
+      <button id="musicBtn" class="ctrl-btn">
+        🔊 MUSIC
+      </button>
+
+    </div>
+
+    <!-- SCORE POPUP -->
+    <div id="scorePopup" class="score-popup hidden"></div>
+
+  </div>
+
+  <!-- ===== PAUSE SCREEN ===== -->
+  <div id="pauseScreen" class="screen">
+    <div class="modal-box">
+
+      <h2>⏸ PAUSED</h2>
+
+      <button id="resumeBtn" class="btn-primary">
+        ▶ RESUME
+      </button>
+
+      <button id="pauseRestartBtn" class="btn-secondary">
+        ↺ RESTART
+      </button>
+
+      <button id="pauseMenuBtn" class="btn-secondary">
+        🏠 MENU
+      </button>
+
+    </div>
+  </div>
+
+  <!-- ===== GAME OVER SCREEN ===== -->
+  <div id="gameOverScreen" class="screen">
+
+    <div class="modal-box">
+
+      <div id="gameOverTitle" class="go-title">
+        GAME OVER
+      </div>
+
+      <div class="go-stats">
+
+        <div class="go-stat">
+          <span class="go-stat-label">FINAL SCORE</span>
+          <span id="finalScore" class="go-stat-value">0</span>
+        </div>
+
+        <div class="go-stat">
+          <span class="go-stat-label">LEVEL REACHED</span>
+          <span id="finalLevel" class="go-stat-value">1</span>
+        </div>
+
+        <div
+          class="go-stat highlight"
+          id="newRecordBadge"
+          style="display:none"
+        >
+          <span>🏆 NEW HIGH SCORE!</span>
+        </div>
+
+      </div>
+
+      <div class="name-input-wrap">
+        <input
+          type="text"
+          id="playerNameInput"
+          placeholder="Enter your name…"
+          maxlength="16"
+        />
+      </div>
+
+      <button id="saveScoreBtn" class="btn-primary">
+        💾 SAVE SCORE
+      </button>
+
+      <button id="restartBtn" class="btn-primary">
+        ↺ PLAY AGAIN
+      </button>
+
+      <button id="menuBtn" class="btn-secondary">
+        🏠 MENU
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- ===== LEADERBOARD MODAL ===== -->
+  <div id="leaderboardModal" class="screen">
+
+    <div class="modal-box leaderboard-box">
+
+      <h2>🏆 LEADERBOARD</h2>
+
+      <ol id="leaderboardList"></ol>
+
+      <button id="closeLbBtn" class="btn-secondary">
+        ✕ CLOSE
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- ===== LEVEL UP OVERLAY ===== -->
+  <div id="levelUpOverlay" class="level-up-overlay hidden">
+    <span>LEVEL UP!</span>
+  </div>
+
+  <!-- ===== COUNTDOWN OVERLAY ===== -->
+  <div id="countdownOverlay" class="countdown-overlay hidden">
+    <span id="countdownNum"></span>
+  </div>
+
+  <!-- ========================= -->
+  <!-- FOOTER BRANDING -->
+  <!-- ========================= -->
+
+  <footer class="site-footer">
+
+    <p>
+      Developed  By
+      <strong>Muhammad Yasir</strong>
+    </p>
+
+    <p>
+      Advanced Frontend Arcade Game using HTML, CSS & JavaScript
+    </p>
+
+  </footer>
+
+  <!-- ========================= -->
+  <!-- SCRIPT -->
+  <!-- ========================= -->
+
+  <script src="app.js"></script>
+
+</body>
+</html>

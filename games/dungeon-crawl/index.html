@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Roguelite Dungeon — Expanded (with Potions)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<style>
+  html,body{margin:0;padding:0;width:100%;height:100%;background:#0b0b0f;overflow:hidden;font-family:monospace;}
+  #startScreen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000;z-index:50;}
+  #startBtn{font-size:2rem;padding:1rem 2rem;background:#1b1b2f;color:#9ef;border:2px solid #4af;cursor:pointer}
+  #hud{position:fixed;top:0;left:0;right:0;height:9vmin;background:rgba(0,0,0,0.6);color:#bfe;display:none;align-items:center;justify-content:space-between;padding:0 1rem;z-index:40}
+  #hud .left,#hud .center,#hud .right{display:flex;align-items:center;gap:1rem}
+  #gameCanvas{display:block;position:absolute;top:9vmin;left:0;width:100%;height:91%;image-rendering:pixelated}
+  #minimap { position: fixed; right: 8px; bottom: 8px; width: 160px; height: 110px; border: 2px solid rgba(255,255,255,0.06); background: rgba(0,0,0,0.2); z-index:70; image-rendering: pixelated; }
+  .msg { position:fixed; left:50%; transform:translateX(-50%); top:45%; color:#fff; font-weight:bold; text-shadow:0 0 6px #000; z-index:60; pointer-events:none; }
+
+  /* POTION HUD */
+  #potionInv { display:flex; align-items:center; gap:8px; user-select:none; }
+  .potionSlot {
+    width:38px; height:48px; display:flex; align-items:center; justify-content:center;
+    position:relative; cursor:pointer;
+  }
+  .potionSVG { width:28px; height:36px; pointer-events:none; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.6)); }
+  .potionCount {
+    position:absolute; bottom:2px; right:6px; font-size:12px; font-weight:700; color:#fff;
+    text-shadow:0 0 6px #000; pointer-events:none;
+  }
+  .potionSlot.inactive .potionSVG { opacity:0.18; transform:scale(0.95); }
+  .potionSlot.inactive .potionCount { display:none; }
+
+  /* mobile hint for tap */
+  #potionHint { font-size:11px; color:#9ef; opacity:0.9; }
+</style>
+</head>
+<body>
+  <div id="startScreen"><button id="startBtn">▶ Start</button></div>
+  <div id="hud">
+    <div class="left">
+      <div id="levelDisp">Level 1</div>
+      <div id="hpDisp">HP: 10</div>
+      <div id="atkDisp">ATK: 3</div>
+      <div id="coinDisp">Coins: 0</div>
+    </div>
+    <div class="center">
+      <div id="enemyDisp">Enemies: 0</div>
+    </div>
+    <div class="right">
+      <div id="msgBrief"></div>
+      <!-- Potion inventory UI (outside playing field) -->
+      <div id="potionInv" aria-label="Potion inventory" title="Tap/click to use a potion">
+        <!-- three slot placeholders; JS will update classes/counts -->
+        <div class="potionSlot inactive" data-slot="0" role="button" aria-pressed="false">
+          <svg class="potionSVG" viewBox="0 0 24 32" xmlns="http://www.w3.org/2000/svg">
+            <g>
+              <rect x="9" y="1" width="6" height="4" rx="1" ry="1" fill="#444"/>
+              <path d="M8 6 C8 9, 16 9, 16 6 L16 6 C18 10, 18 18, 12 26 C6 18, 6 10, 8 6 Z" fill="#b44"/>
+              <path d="M11 9 L13 9 L13 11 L11 11 Z" fill="#ffd"/>
+            </g>
+          </svg>
+          <div class="potionCount">0</div>
+        </div>
+        <div class="potionSlot inactive" data-slot="1" role="button" aria-pressed="false">
+          <svg class="potionSVG" viewBox="0 0 24 32" xmlns="http://www.w3.org/2000/svg">
+            <g>
+              <rect x="9" y="1" width="6" height="4" rx="1" ry="1" fill="#444"/>
+              <path d="M8 6 C8 9, 16 9, 16 6 L16 6 C18 10, 18 18, 12 26 C6 18, 6 10, 8 6 Z" fill="#b44"/>
+              <path d="M11 9 L13 9 L13 11 L11 11 Z" fill="#ffd"/>
+            </g>
+          </svg>
+          <div class="potionCount">0</div>
+        </div>
+        <div class="potionSlot inactive" data-slot="2" role="button" aria-pressed="false">
+          <svg class="potionSVG" viewBox="0 0 24 32" xmlns="http://www.w3.org/2000/svg">
+            <g>
+              <rect x="9" y="1" width="6" height="4" rx="1" ry="1" fill="#444"/>
+              <path d="M8 6 C8 9, 16 9, 16 6 L16 6 C18 10, 18 18, 12 26 C6 18, 6 10, 8 6 Z" fill="#b44"/>
+              <path d="M11 9 L13 9 L13 11 L11 11 Z" fill="#ffd"/>
+            </g>
+          </svg>
+          <div class="potionCount">0</div>
+        </div>
+      </div>
+      <div id="potionHint">Press P to drink</div>
+    </div>
+  </div>
+
+  <canvas id="gameCanvas" aria-label="Dungeon canvas"></canvas>
+  <canvas id="minimap" title="Minimap"></canvas>
+  <div id="floatingMessages"></div>
+
+<script>
+/* ---------------- CONFIG ---------------- */
+const TILE_COLS = 61, TILE_ROWS = 45; // larger dungeon
+const PLAYER_BASE_HP = 12;
+const PLAYER_BASE_ATK = 3;
+const ENEMY_MELEE_HP = 4, ENEMY_MELEE_ATK = 1;
+const ENEMY_RANGED_HP = 3, ENEMY_RANGED_ATK = 1;
+const NUM_ENEMIES_BASE = 15;
+const NUM_CHESTS = 3;
+const NUM_POTIONS = 6; // potions to place each level
+const FOG_RADIUS = 3;
+const POTION_HEAL = 8; // amount healed by using a potion
+const PLAYER_POTION_CAP = 3;
+
+/* ---------------- UTIL / CONTEXTS ---------------- */
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d',{alpha:false});
+ctx.imageSmoothingEnabled = false;
+const mini = document.getElementById('minimap');
+const miniCtx = mini.getContext('2d');
+
+let animFrame = 0;
+let torchFlicker = 1.0;
+
+function RNG(seed){
+  return function(){ seed = (seed*1664525 + 1013904223) % 4294967296; return seed/4294967296; }
+}
+function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+function pick(arr, r) { return arr[Math.floor(r()*arr.length)]; }
+function shuffle(arr, r){ arr = arr.slice(); for(let i=arr.length-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]] } return arr; }
+
+/* ---------------- GAME STATE ---------------- */
+let state = {
+  running:false,
+  level:1,
+  seed: 0,
+  map: null,
+  player: { x:1, y:1, hp: PLAYER_BASE_HP, atk: PLAYER_BASE_ATK },
+  stairs: { x:1, y:1 },
+  enemies: [], // {x,y,type,hp}
+  chests: [],  // {x,y,opened:false}
+  potionsOnMap: [], // {x,y}
+  fog: [],
+  dungeonName: '',
+  inventory: { potions: 0 },
+  coins: 0
+};
+
+/* ---------------- RESIZE ---------------- */
+function resizeCanvas(){
+  canvas.width = window.innerWidth;
+  canvas.height = Math.floor(window.innerHeight * 0.91);
+  mini.width = 160;
+  mini.height = 110;
+  draw(); drawMiniMap();
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+/* ---------------- MAZE GENERATION (recursive backtracker) ---------------- */
+function generateMaze(w,h,seed){
+  const rand = RNG(seed);
+  if(w%2===0) w--;
+  if(h%2===0) h--;
+  const tiles = Array.from({length:h},()=>Array(w).fill(1)); // 1 wall, 0 floor
+  function carve(sx,sy){
+    tiles[sy][sx] = 0;
+    const dirs = shuffle([[0,-2],[0,2],[2,0],[-2,0]], rand);
+    for(const [dx,dy] of dirs){
+      const nx = sx + dx, ny = sy + dy;
+      if(nx>0 && nx<w-1 && ny>0 && ny<h-1 && tiles[ny][nx] === 1){
+        tiles[sy + dy/2][sx + dx/2] = 0;
+        carve(nx, ny);
+      }
+    }
+  }
+  carve(1,1);
+  return tiles;
+}
+
+/* ---------------- PATHCHECK ---------------- */
+function reachable(map, start, goal){
+  const h=map.length, w=map[0].length;
+  const q = [start];
+  const seen = new Set([`${start.x},${start.y}`]);
+  while(q.length){
+    const cur = q.shift();
+    if(cur.x===goal.x && cur.y===goal.y) return true;
+    for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+      const nx=cur.x+dx, ny=cur.y+dy;
+      if(ny>=0 && ny<h && nx>=0 && nx<w && map[ny][nx]===0 && !seen.has(`${nx},${ny}`)){
+        seen.add(`${nx},${ny}`);
+        q.push({x:nx,y:ny});
+      }
+    }
+  }
+  return false;
+}
+
+/* ---------------- DUNGEON NAME GENERATOR ---------------- */
+function generateDungeonName(seed){
+  const rand = RNG(seed);
+  const prefixes = [
+    "Catacombs","Crypt","Tomb","Ruins","Depths","Abyss","Caverns","Sanctum",
+    "Vault","Sepulcher","Lair","Temple","Grave","Keep","Hall","Grotto"
+  ];
+  const middles = ["of","beneath","within","under","beyond","below"];
+  const suffixes = [
+    "Whispering Skulls","Lost Kings","Forgotten Gods","Ashen Thrones","Shattered Faith",
+    "Eternal Hunger","Fading Souls","Black Flame","Silent Oaths","Broken Spirits",
+    "Crimson Echoes","Weeping Moons","Hollow Eyes","Withered Grace","Gilded Dissonance",
+    "Iron Remorse","Sable Lanterns"
+  ];
+  const adjChance = rand();
+  if(adjChance > 0.85){
+    const adjs = ["Bleak","Forsaken","Ebon","Sundered","Wailing","Gloomed","Vermilion"];
+    return `${pick(adjs, rand)} ${pick(prefixes, rand)} ${pick(middles, rand)} ${pick(suffixes, rand)}`;
+  } else {
+    return `${pick(prefixes, rand)} ${pick(middles, rand)} ${pick(suffixes, rand)}`;
+  }
+}
+
+/* ---------------- ENTITY PLACEMENT ---------------- */
+function placeEntities(map){
+  const rand = RNG(state.seed + state.level);
+  const h = map.length, w = map[0].length;
+  state.player = { x:1, y:1, hp: PLAYER_BASE_HP + Math.floor((state.level-1)/2), atk: PLAYER_BASE_ATK };
+  state.inventory.potions = 0; // reset inventory each level (optional — remove if you want carry-over)
+  const floors = [];
+  for(let y=0;y<h;y++) for(let x=0;x<w;x++) if(map[y][x]===0) floors.push({x,y});
+  let stairs = null;
+  for(let tries=0; tries<1000 && !stairs; tries++){
+    const pickTile = floors[Math.floor(rand()*floors.length)];
+    const dist = Math.abs(pickTile.x - state.player.x) + Math.abs(pickTile.y - state.player.y);
+    if(dist > 5 && reachable(map, state.player, pickTile)) stairs = pickTile;
+  }
+  if(!stairs) stairs = { x: w-2, y: h-2 };
+  state.stairs = stairs;
+  state.enemies = [];
+  state.chests = [];
+  state.potionsOnMap = [];
+  const enemyCount = NUM_ENEMIES_BASE + Math.floor(state.level/2);
+  const candidate = floors.filter(t => !(t.x===state.player.x && t.y===state.player.y) && !(t.x===state.stairs.x && t.y===state.stairs.y));
+  const shuffled = shuffle(candidate, rand);
+  let i = 0;
+  for(let e=0; e<enemyCount && i<shuffled.length; i++){
+    const t = shuffled[i];
+    const p = Math.min(0.25 + state.level*0.03, 0.6);
+    const type = (rand() < p) ? 'ranged' : 'melee';
+    state.enemies.push({ x: t.x, y: t.y, type, hp: type==='ranged'? ENEMY_RANGED_HP: ENEMY_MELEE_HP });
+    e++;
+  }
+  for(let c=0;c<NUM_CHESTS && i<shuffled.length;c++,i++){
+    const t = shuffled[i];
+    state.chests.push({ x:t.x, y:t.y, opened:false });
+  }
+  // place potions on map (distinct tiles)
+  for(let p=0; p<NUM_POTIONS && i<shuffled.length; p++, i++){
+    const t = shuffled[i];
+    state.potionsOnMap.push({ x: t.x, y: t.y });
+  }
+  state.fog = map.map(row => row.map(()=>1));
+  revealFog(state.player.x, state.player.y);
+}
+
+/* ---------------- MESSAGES ---------------- */
+function pushMessage(text, time=1200){
+  const div = document.createElement('div');
+  div.className = 'msg';
+  div.style = "position:fixed;left:50%;transform:translateX(-50%);top:45%;padding:8px 12px;background:rgba(0,0,0,0.7);color:#fff;border-radius:6px;z-index:80;font-weight:700";
+  div.textContent = text;
+  document.body.appendChild(div);
+  setTimeout(()=>div.remove(), time);
+}
+
+/* ---------------- DRAW HELPERS ---------------- */
+function drawPixelSprite(pixels, sx, sy, color, unit, bob=0){
+  ctx.fillStyle = color;
+  for(const [px,py] of pixels){
+    ctx.fillRect(Math.round(sx + px*unit), Math.round(sy + py*unit + bob), unit, unit);
+  }
+}
+const PLAYER_SPR = [[1,0],[0,1],[1,1],[2,1],[0,2],[2,2],[1,3]];
+const MELEE_SPR = [[1,0],[0,1],[1,1],[2,1],[1,2]];
+const RANGED_SPR = [[1,0],[1,1],[0,2],[2,2]];
+const CHEST_SPR = [[0,0],[1,0],[2,0],[0,1],[2,1],[0,2],[1,2],[2,2]];
+const STAIR_SPR = [[0,2],[1,1],[2,0],[2,2]];
+const POTION_SPR = [[1,0],[1,1],[0,2],[2,2],[1,3]]; // small bottle-like pixel sprite
+
+/* ---------------- DRAW (camera / viewport) ---------------- */
+function draw(){
+  if(!state.running || !state.map) return;
+  animFrame++;
+  torchFlicker = 0.85 + Math.sin(animFrame / 8) * 0.15;
+
+  const map = state.map;
+  const mapW = map[0].length, mapH = map.length;
+  const unit = 32; // fixed tile size in pixels
+  const viewCols = Math.floor(canvas.width / unit);
+  const viewRows = Math.floor(canvas.height / unit);
+
+  // Camera centered on player (clamped to map bounds)
+  const camX = clamp(state.player.x - Math.floor(viewCols / 2), 0, Math.max(0, mapW - viewCols));
+  const camY = clamp(state.player.y - Math.floor(viewRows / 2), 0, Math.max(0, mapH - viewRows));
+
+  ctx.fillStyle = "#07070a";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  // draw visible map cells
+  for(let y = 0; y < viewRows; y++){
+    for(let x = 0; x < viewCols; x++){
+      const mapX = camX + x;
+      const mapY = camY + y;
+      if(mapY < 0 || mapY >= mapH || mapX < 0 || mapX >= mapW) continue;
+      const px = x * unit, py = y * unit;
+      if(state.fog[mapY][mapX]){
+        ctx.fillStyle = "#000";
+        ctx.fillRect(px, py, unit, unit);
+        continue;
+      }
+      if(map[mapY][mapX] === 1){
+        const base = Math.floor(34 * torchFlicker);
+        ctx.fillStyle = `rgb(${base},${base},${Math.min(255, base+20)})`;
+      } else {
+        const f = Math.floor(42 * torchFlicker);
+        ctx.fillStyle = `rgb(${f},${f},${Math.min(255, f+30)})`;
+      }
+      ctx.fillRect(px, py, unit, unit);
+    }
+  }
+
+  // entity drawing helper with camera offset
+  const startX = camX, endX = camX + viewCols, startY = camY, endY = camY + viewRows;
+  const bob = (t=0) => Math.sin((animFrame + t) / 6) * Math.max(1, Math.floor(unit/12));
+
+  function drawEntity(ent, sprite, color, seedOffset=0){
+    if(ent.x < startX || ent.x >= endX || ent.y < startY || ent.y >= endY) return;
+    const px = (ent.x - camX) * unit;
+    const py = (ent.y - camY) * unit;
+    drawPixelSprite(sprite, px + Math.round(unit*0.15), py + Math.round(unit*0.15), color, Math.max(1, Math.floor(unit/6)), bob(ent.x*13 + ent.y*7 + seedOffset));
+  }
+
+  // potions on map
+  for(const p of state.potionsOnMap){
+    if(state.fog[p.y][p.x]) continue;
+    drawEntity(p, POTION_SPR, "#7cf"); // bluish potion
+  }
+
+  // chests
+  for(const c of state.chests){
+    if(state.fog[c.y][c.x]) continue;
+    drawEntity(c, CHEST_SPR, c.opened ? "#444" : "#b87333");
+  }
+
+  // stairs
+  if(!state.fog[state.stairs.y][state.stairs.x]){
+    drawEntity(state.stairs, STAIR_SPR, "#4cf");
+  }
+
+  // enemies
+  for(const e of state.enemies){
+    if(state.fog[e.y][e.x]) continue;
+    const color = (state.flash && state.flash.x===e.x && state.flash.y===e.y) ? "#fff" : (e.type==='ranged' ? "#d85" : "#e44");
+    drawEntity(e, e.type==='ranged' ? RANGED_SPR : MELEE_SPR, color);
+  }
+
+  // torch aura around player (soft radial gradient)
+  if(!state.fog[state.player.y][state.player.x]){
+    const centerX = (state.player.x - camX) * unit + unit/2;
+    const centerY = (state.player.y - camY) * unit + unit/2;
+    const gRadius = unit * 4.5;
+    const grad = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, gRadius);
+    grad.addColorStop(0, `rgba(255,200,120,${0.12 + 0.06 * Math.abs(Math.sin(animFrame/8))})`);
+    grad.addColorStop(0.6, `rgba(80,40,20,${0.06 * Math.abs(Math.sin(animFrame/10))})`);
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+
+  // player
+  {
+    const px = (state.player.x - camX) * unit;
+    const py = (state.player.y - camY) * unit;
+    const color = (state.flash && state.flash.target==="player") ? "#fff" : "#6f6";
+    drawPixelSprite(PLAYER_SPR, px + Math.round(unit*0.15), py + Math.round(unit*0.15), color, Math.max(1, Math.floor(unit/6)), Math.sin((animFrame + state.player.x*11 + state.player.y*5)/6) * Math.max(1, Math.floor(unit/12)));
+    state.flash = null;
+  }
+
+  updateHUD();
+  drawMiniMap();
+}
+
+/* ---------------- MINIMAP ---------------- */
+function drawMiniMap(){
+  if(!state.map) return;
+  const map = state.map;
+  const w = mini.width, h = mini.height;
+  miniCtx.fillStyle = "rgba(0,0,0,0.18)";
+  miniCtx.fillRect(0,0,w,h);
+  const mapW = map[0].length, mapH = map.length;
+  const cellW = Math.max(1, Math.floor(w / mapW));
+  const cellH = Math.max(1, Math.floor(h / mapH));
+  for(let y=0;y<mapH;y++){
+    for(let x=0;x<mapW;x++){
+      const vx = x*cellW, vy = y*cellH;
+      if(state.fog[y][x]) {
+        miniCtx.fillStyle = "rgba(0,0,0,0.22)";
+        miniCtx.fillRect(vx,vy,cellW,cellH);
+      } else if(map[y][x] === 1){
+        miniCtx.fillStyle = "#222";
+        miniCtx.fillRect(vx,vy,cellW,cellH);
+      } else {
+        miniCtx.fillStyle = "#444";
+        miniCtx.fillRect(vx,vy,cellW,cellH);
+      }
+    }
+  }
+  // potions (minimap)
+  miniCtx.fillStyle = "#7cf";
+  for(const p of state.potionsOnMap){
+    if(state.fog[p.y][p.x]) continue;
+    miniCtx.fillRect(p.x*cellW, p.y*cellH, cellW, cellH);
+  }
+  // enemies
+  miniCtx.fillStyle = "#e44";
+  for(const e of state.enemies){
+    if(state.fog[e.y][e.x]) continue;
+    miniCtx.fillRect(e.x*cellW, e.y*cellH, cellW, cellH);
+  }
+  // stairs
+  miniCtx.fillStyle = "#4cf";
+  miniCtx.fillRect(state.stairs.x*cellW, state.stairs.y*cellH, cellW, cellH);
+  // player
+  miniCtx.fillStyle = "#6f6";
+  miniCtx.fillRect(state.player.x*cellW, state.player.y*cellH, cellW, cellH);
+}
+
+/* ---------------- HUD ---------------- */
+function updateHUD(){
+  document.getElementById('levelDisp').textContent = `Level ${state.level}`;
+  document.getElementById('hpDisp').textContent = `HP: ${state.player.hp}`;
+  document.getElementById('atkDisp').textContent = `ATK: ${state.player.atk}`;
+  document.getElementById('coinDisp').textContent = `Coins: ${state.coins}`;
+  document.getElementById('enemyDisp').textContent = `Enemies: ${state.enemies.length}`;
+  document.getElementById('msgBrief').textContent = state.dungeonName || '';
+
+  // update potion HUD
+  const slots = document.querySelectorAll('#potionInv .potionSlot');
+  let remaining = state.inventory.potions;
+  for(let i=0;i<slots.length;i++){
+    const slot = slots[i];
+    const countDiv = slot.querySelector('.potionCount');
+    if(remaining > 0){
+      slot.classList.remove('inactive');
+      countDiv.textContent = Math.min(remaining, 1); // show per-slot single-bottle count (we choose to display 1 per slot if present)
+      slot.setAttribute('aria-pressed','false');
+      remaining--;
+    } else {
+      slot.classList.add('inactive');
+      countDiv.textContent = '0';
+      slot.setAttribute('aria-pressed','false');
+    }
+  }
+}
+
+/* ---------------- COMBAT & LOOT ---------------- */
+function combat(player, enemy){
+  while(player.hp > 0 && enemy.hp > 0){
+    enemy.hp -= player.atk;
+    state.flash = { x: enemy.x, y: enemy.y };
+    if(enemy.hp <= 0) break;
+    player.hp -= (enemy.type === 'ranged' ? ENEMY_RANGED_ATK : ENEMY_MELEE_ATK);
+    state.flash = { target: "player" };
+  }
+}
+
+function openChestAt(x,y){
+  const idx = state.chests.findIndex(c => c.x===x && c.y===y && !c.opened);
+  if(idx >= 0){
+    const chest = state.chests[idx];
+    chest.opened = true;
+    const r = Math.random();
+    if(r < 0.45){
+      const coinReward = 5 + Math.floor(state.level * 1.5);
+      state.coins += coinReward;
+      pushMessage(`+${coinReward} coins`);
+    } else if (r < 0.7){
+      state.player.atk += 1;
+      pushMessage("+1 ATK");
+    } else {
+      // sometimes chest contains a potion (if player's inventory not full)
+      if(state.inventory.potions < PLAYER_POTION_CAP){
+        state.inventory.potions = Math.min(PLAYER_POTION_CAP, state.inventory.potions + 1);
+        pushMessage("Found a potion!");
+      } else {
+        pushMessage("Found a potion (inventory full)");
+      }
+    }
+    updateHUD();
+  }
+}
+
+/* ---------------- ENEMY BEHAVIOR ---------------- */
+function enemyTurn(){
+  for(const e of state.enemies.slice()){
+    const manhattan = Math.abs(e.x - state.player.x) + Math.abs(e.y - state.player.y);
+    if(manhattan === 1){
+      combat(state.player, e);
+      if(state.player.hp <= 0){
+        pushMessage("You died", 2000);
+        alert("You died! Game Over.");
+        state.running = false;
+        return;
+      }
+      if(e.hp <= 0){
+        const idx = state.enemies.indexOf(e);
+        if(idx >= 0) state.enemies.splice(idx,1);
+        pushMessage("Enemy defeated");
+        continue;
+      }
+    }
+    if(e.type === 'ranged'){
+      const range = 3 + Math.floor(state.level/4);
+      if(manhattan <= range && hasLineOfSight(state.map, e, state.player)){
+        state.player.hp -= ENEMY_RANGED_ATK;
+        state.flash = { target: "player" };
+        if(state.player.hp <= 0){
+          pushMessage("You died", 2000);
+          alert("You died! Game Over.");
+          state.running = false;
+          return;
+        } else {
+          pushMessage("Hit by arrow");
+        }
+        continue;
+      }
+    }
+    const dirs = shuffle([[1,0],[-1,0],[0,1],[0,-1]], Math.random);
+    let best = null, bestDist = Infinity;
+    for(const [dx,dy] of dirs){
+      const nx = e.x + dx, ny = e.y + dy;
+      if(!state.map[ny] || state.map[ny][nx]===1) continue;
+      if(state.enemies.some(en => en !== e && en.x===nx && en.y===ny)) continue;
+      if(nx===state.player.x && ny===state.player.y) continue;
+      const d = Math.abs(nx - state.player.x) + Math.abs(ny - state.player.y);
+      if(d < bestDist){ bestDist = d; best = {nx,ny}; }
+    }
+    if(best) { e.x = best.nx; e.y = best.ny; }
+  }
+}
+
+/* rudimentary LOS */
+function hasLineOfSight(map, a, b){
+  if(a.x === b.x){
+    const sy = Math.min(a.y, b.y), ey = Math.max(a.y, b.y);
+    for(let y=sy+1;y<ey;y++) if(map[y][a.x]===1) return false;
+    return true;
+  }
+  if(a.y === b.y){
+    const sx = Math.min(a.x, b.x), ex = Math.max(a.x, b.x);
+    for(let x=sx+1;x<ex;x++) if(map[a.y][x]===1) return false;
+    return true;
+  }
+  return false;
+}
+
+/* ---------------- PLAYER ACTIONS ---------------- */
+function tryMove(dx,dy){
+  if(!state.running) return;
+  const nx = state.player.x + dx, ny = state.player.y + dy;
+  if(!state.map[ny] || state.map[ny][nx] === 1) return;
+
+  // check potion pickup first (if stepping on potion tile)
+  const potionIdx = state.potionsOnMap.findIndex(p => p.x===nx && p.y===ny);
+  if(potionIdx >= 0){
+    if(state.inventory.potions < PLAYER_POTION_CAP){
+      state.inventory.potions++;
+      state.potionsOnMap.splice(potionIdx, 1);
+      pushMessage("Picked up a potion!");
+    } else {
+      pushMessage("Potion here — inventory full");
+      // still move onto tile so player can step away
+      state.player.x = nx; state.player.y = ny;
+      revealFog(nx,ny);
+      enemyTurn();
+      draw(); updateHUD();
+      return;
+    }
+  }
+
+  const enemyIndex = state.enemies.findIndex(e => e.x===nx && e.y===ny);
+  if(enemyIndex >= 0){
+    const enemy = state.enemies[enemyIndex];
+    combat(state.player, enemy);
+    if(state.player.hp <= 0){
+      draw(); updateHUD();
+      pushMessage("You died", 2000);
+      alert("Game Over!");
+      state.running = false;
+      return;
+    }
+    if(enemy.hp <= 0){
+      state.enemies.splice(enemyIndex,1);
+      pushMessage("Enemy slain");
+    }
+  } else {
+    state.player.x = nx; state.player.y = ny;
+    const chest = state.chests.find(c => c.x===nx && c.y===ny && !c.opened);
+    if(chest) openChestAt(nx,ny);
+    revealFog(nx,ny);
+    if(nx === state.stairs.x && ny === state.stairs.y){
+      state.level++;
+      pushMessage("Descending...", 1200);
+      state.seed = Math.floor(Math.random()*1e9);
+      buildLevel(state.level);
+      return;
+    }
+  }
+  enemyTurn();
+  draw(); updateHUD();
+}
+
+/* ---------------- POTION USAGE ---------------- */
+function usePotion(){
+  if(state.inventory.potions <= 0){
+    pushMessage("No potions!");
+    return false;
+  }
+  state.inventory.potions = Math.max(0, state.inventory.potions - 1);
+  
+  // Calculate maximum HP for current level
+  const maxHP = PLAYER_BASE_HP + Math.floor((state.level-1)/2);
+  const oldHP = state.player.hp;
+  state.player.hp = Math.min(maxHP, state.player.hp + POTION_HEAL);
+  const actualHeal = state.player.hp - oldHP;
+  
+  if(actualHeal > 0){
+    pushMessage(`Healed ${actualHeal} HP`);
+  } else {
+    pushMessage("Already at full health");
+  }
+  updateHUD();
+  return true;
+}
+
+/* ---------------- FOG ---------------- */
+function revealFog(px,py){
+  const r = FOG_RADIUS;
+  for(let dy=-r;dy<=r;dy++) for(let dx=-r;dx<=r;dx++){
+    const nx = px+dx, ny = py+dy;
+    if(ny>=0 && ny<state.fog.length && nx>=0 && nx<state.fog[0].length){
+      if(dx*dx+dy*dy <= r*r) state.fog[ny][nx] = 0;
+    }
+  }
+}
+
+/* ---------------- LEVEL BUILDING ---------------- */
+function buildLevel(level){
+  state.map = generateMaze(TILE_COLS, TILE_ROWS, state.seed + level);
+  placeEntities(state.map);
+  state.dungeonName = generateDungeonName(state.seed + level * 7919);
+  document.getElementById('msgBrief').textContent = state.dungeonName;
+  draw(); updateHUD();
+}
+
+/* ---------------- INPUT BINDINGS ---------------- */
+window.addEventListener('keydown', (e) => {
+  if(!state.running) return;
+  const key = e.key;
+  if(['ArrowUp','w','W'].includes(key)) tryMove(0,-1);
+  if(['ArrowDown','s','S'].includes(key)) tryMove(0,1);
+  if(['ArrowLeft','a','A'].includes(key)) tryMove(-1,0);
+  if(['ArrowRight','d','D'].includes(key)) tryMove(1,0);
+
+  // Potion use by keyboard (P/p)
+  if(key === 'p' || key === 'P'){
+    const used = usePotion();
+    if(used){
+      // enemy turn after usage (consuming time)
+      enemyTurn();
+      draw(); updateHUD();
+    }
+  }
+});
+
+/* ---------------- POTION HUD INTERACTION ---------------- */
+document.querySelectorAll('#potionInv .potionSlot').forEach(slot => {
+  slot.addEventListener('click', (ev) => {
+    if(!state.running) return;
+    // Only use if slot is active (inventory > 0)
+    if(state.inventory.potions <= 0) { pushMessage("No potions!"); return; }
+    // Use potion
+    const used = usePotion();
+    if(used){
+      // brief slot feedback
+      slot.classList.add('inactive');
+      // enemy turn after use
+      enemyTurn();
+      draw(); updateHUD();
+    }
+  });
+
+  // touch friendly
+  slot.addEventListener('touchstart', (ev) => {
+    ev.preventDefault();
+    slot.click();
+  }, {passive:false});
+});
+
+/* ---------------- START BUTTON ---------------- */
+document.getElementById('startBtn').addEventListener('click', ()=>{
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('hud').style.display = 'flex';
+  state.running = true;
+  state.level = 1;
+  state.seed = Math.floor(Math.random()*1e9);
+  buildLevel(state.level);
+  resizeCanvas();
+});
+
+/* ---------------- DRAW LOOP ---------------- */
+function loop(){
+  draw();
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>
+loop();
+</script>
+</body>
+</html>

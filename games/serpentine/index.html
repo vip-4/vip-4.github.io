@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Serpentine — 3D Snake Game | Play Free in Browser</title>
+  <meta name="description" content="Play Serpentine — a fast-paced 3D snake game built with Three.js. WebGL graphics, 3 difficulty levels (Easy, Medium, Hard), mobile joystick support, particle effects, and persistent high scores. No download needed, runs free in your browser.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cyberpunkslotgame.pages.dev/games/serpentine/">
+  <meta property="og:title" content="Serpentine — 3D Snake Game">
+  <meta property="og:description" content="A fast-paced 3D snake game built with Three.js. WebGL graphics, 3 difficulty levels, mobile joystick support, and persistent high scores. Play free in your browser — no download needed.">
+  <meta property="og:image" content="https://cyberpunkslotgame.pages.dev/games/serpentine/cover.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Serpentine 3D Snake Game — WebGL browser game">
+  <meta property="og:site_name" content="Serpentine">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://cyberpunkslotgame.pages.dev/games/serpentine/">
+  <meta name="twitter:title" content="Serpentine — 3D Snake Game">
+  <meta name="twitter:description" content="A fast-paced 3D snake game built with Three.js. WebGL graphics, 3 difficulty levels, mobile joystick support, and persistent high scores. Play free in your browser — no download needed.">
+  <meta name="twitter:image" content="https://cyberpunkslotgame.pages.dev/games/serpentine/cover.png">
+  <meta name="twitter:image:alt" content="Serpentine 3D Snake Game — WebGL browser game">
+  <link rel="canonical" href="https://cyberpunkslotgame.pages.dev/games/serpentine/">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#050510">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐍</text></svg>">
+  <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAC3SURBVFhH7Y87DoAgEESpqb3/VTFaEDLZz6wiaKR4jcvMPFPOW5lJwg+jWQLfFEilVPAWJSTQDveSoAVwdJgAjvUYbQkL4P0upsDT4weqQI9xJk8J4I2B/QFRgA17MB2uAN568w8Bq2eYgNb3fgEpFMHrEgUwiLcIXg8loIU9mA5VgC2wYLKmAJZYRVczYQGrFN9Yb2sGP2hgKQN2SNAC52NhRAOzGiGBGhIGo8O1Cz+MZglMF9gBUQS1MjJ3xXMAAAAASUVORK5CYII=">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23050510'/><text y='.9em' font-size='80' x='10'>🐍</text></svg>">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Serpentine">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"></noscript>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cyan:   #00ffe7;
+      --purple: #7b2fff;
+      --gold:   #ffcc00;
+      --red:    #ff3366;
+      --bg:     #050510;
+      --panel:  rgba(5,5,30,0.88);
+      --border: rgba(0,255,231,0.25);
+      --font-display: 'Orbitron', monospace;
+      --font-mono:    'Share Tech Mono', monospace;
+      --easy-col:   #39ff6e;
+      --medium-col: #ffcc00;
+      --hard-col:   #ff3366;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--bg);
+      overflow: hidden;
+      font-family: var(--font-mono);
+      color: var(--cyan);
+      cursor: none;
+    }
+    #c {
+      display: block;
+      width: 100%; height: 100%;
+      position: fixed; top: 0; left: 0;
+    }
+
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      background: #050510;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      font-family: 'Orbitron', monospace;
+      color: #00ffe7;
+    }
+    #loading-screen h1 {
+      font-size: 44px;
+      letter-spacing: 5px;
+      margin-bottom: 8px;
+      text-shadow: 0 0 24px rgba(0, 255, 231, 0.55);
+    }
+    #loading-screen .loading-text {
+      letter-spacing: 4px;
+      animation: loadingPulse 1s infinite alternate;
+    }
+    #loading-screen .loading-spinner {
+      margin-top: 16px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 3px solid rgba(0,255,231,0.1);
+      border-top-color: #00ffe7;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes loadingPulse {
+      from { opacity: 0.3; }
+      to { opacity: 1; }
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ═══ HUD ═══ */
+    #hud {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border-radius: 4px;
+    }
+
+    /* Score panel */
+    #score-panel { position: absolute; top: 20px; left: 20px; padding: 14px 22px; min-width: 160px; }
+    #score-panel .label { font-family: var(--font-display); font-size: 9px; letter-spacing: 3px; opacity: 0.5; text-transform: uppercase; }
+    #score-panel .value { font-family: var(--font-display); font-size: 32px; font-weight: 900; line-height: 1.1; text-shadow: 0 0 20px var(--cyan); transition: color 0.15s, text-shadow 0.15s; }
+    #score-panel .value.flash { color: var(--gold); text-shadow: 0 0 30px var(--gold); }
+    #score-panel .hi { font-size: 11px; opacity: 0.6; margin-top: 4px; }
+    #level-badge { display: inline-block; font-family: var(--font-display); font-size: 8px; letter-spacing: 2px; padding: 2px 8px; border-radius: 2px; margin-top: 6px; border: 1px solid currentColor; }
+
+    /* Info panel */
+    #info-panel { position: absolute; top: 20px; right: 20px; padding: 12px 18px; font-size: 11px; line-height: 1.8; text-align: right; opacity: 0.7; }
+    #info-panel span { color: var(--cyan); }
+
+    /* Settings panel */
+    #settings-panel { position: absolute; bottom: 80px; right: 20px; padding: 16px 20px; width: 220px; pointer-events: all; font-size: 11px; transition: opacity 0.3s; }
+    #settings-panel.hidden { opacity: 0; pointer-events: none; }
+    #settings-panel h3 { font-family: var(--font-display); font-size: 9px; letter-spacing: 3px; margin-bottom: 12px; opacity: 0.6; }
+    .setting-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .setting-row label { opacity: 0.7; }
+    .setting-row input[type=range] { width: 90px; accent-color: var(--cyan); }
+    .setting-row select { background: transparent; border: 1px solid var(--border); color: var(--cyan); font-family: var(--font-mono); font-size: 10px; padding: 2px 4px; cursor: pointer; }
+    .setting-row select option { background: #0a0a2a; }
+
+    /* Overlay screens */
+    .screen { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: all; padding: 40px 50px; min-width: 340px; visibility: visible; transition: opacity 0.4s, transform 0.4s; }
+    /* transition:none here is intentional and critical:
+       - When HIDING (adding .hidden): post-change state = .screen.hidden → transition:none → INSTANT hide
+       - When SHOWING (removing .hidden): post-change state = .screen (base) → opacity/transform 0.4s → smooth fade-in
+       Without this override the 0.4s transition applies both ways, making hide feel broken on first click. */
+    .screen.hidden { opacity: 0; pointer-events: none; visibility: hidden; transform: translate(-50%, -48%); transition: none; }
+    .screen h1 { font-family: var(--font-display); font-size: 48px; font-weight: 900; letter-spacing: 6px; text-shadow: 0 0 40px var(--cyan), 0 0 80px var(--cyan); margin-bottom: 6px; }
+    .screen .subtitle { font-size: 11px; letter-spacing: 4px; opacity: 0.5; margin-bottom: 30px; }
+    .controls-list { text-align: left; font-size: 11px; line-height: 2.2; opacity: 0.65; margin-bottom: 28px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 12px 0; }
+    .controls-list span { color: var(--cyan); display: inline-block; width: 80px; }
+
+    /* Buttons */
+    .btn { display: inline-block; font-family: var(--font-display); font-size: 12px; letter-spacing: 3px; padding: 12px 32px; border: 1px solid var(--cyan); color: var(--cyan); background: transparent; cursor: pointer; transition: background 0.2s, box-shadow 0.2s; pointer-events: all; }
+    .btn:hover { background: rgba(0,255,231,0.1); box-shadow: 0 0 20px rgba(0,255,231,0.3); }
+    .btn + .btn { margin-left: 10px; }
+    .btn.secondary { border-color: rgba(0,255,231,0.3); color: rgba(0,255,231,0.45); font-size: 10px; padding: 10px 20px; }
+    .btn.secondary:hover { border-color: var(--cyan); color: var(--cyan); background: rgba(0,255,231,0.05); }
+
+    /* ═══ LEVEL SELECT ═══ */
+    #level-select-screen { min-width: 440px; }
+    #level-select-screen h1 { font-size: 40px; }
+    .diff-cards { display: flex; gap: 12px; margin: 24px 0 28px; justify-content: center; }
+    .diff-card { flex: 1; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 16px 12px; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s; background: rgba(5,5,30,0.5); pointer-events: all; min-width: 108px; }
+    .diff-card:hover { transform: translateY(-2px); }
+    .diff-card.selected { transform: translateY(-3px); }
+    .diff-card[data-diff="easy"]   { border-color: rgba(57,255,110,0.35); }
+    .diff-card[data-diff="medium"] { border-color: rgba(255,204,0,0.35); }
+    .diff-card[data-diff="hard"]   { border-color: rgba(255,51,102,0.35); }
+    .diff-card[data-diff="easy"].selected,   .diff-card[data-diff="easy"]:hover   { border-color: var(--easy-col);   box-shadow: 0 0 18px rgba(57,255,110,0.3);  }
+    .diff-card[data-diff="medium"].selected, .diff-card[data-diff="medium"]:hover { border-color: var(--medium-col); box-shadow: 0 0 18px rgba(255,204,0,0.3);   }
+    .diff-card[data-diff="hard"].selected,   .diff-card[data-diff="hard"]:hover   { border-color: var(--hard-col);   box-shadow: 0 0 18px rgba(255,51,102,0.3);  }
+    .diff-card .diff-name { font-family: var(--font-display); font-size: 11px; letter-spacing: 3px; font-weight: 700; margin-bottom: 8px; }
+    .diff-card[data-diff="easy"]   .diff-name { color: var(--easy-col); }
+    .diff-card[data-diff="medium"] .diff-name { color: var(--medium-col); }
+    .diff-card[data-diff="hard"]   .diff-name { color: var(--hard-col); }
+    .diff-card .diff-desc { font-size: 9px; opacity: 0.5; line-height: 1.7; letter-spacing: 1px; margin-bottom: 10px; }
+    .diff-card .diff-hi { font-size: 9px; letter-spacing: 2px; color: rgba(0,255,231,0.4); }
+    .diff-card .diff-hi strong { font-family: var(--font-display); font-size: 14px; display: block; margin-top: 2px; opacity: 1; }
+    .diff-card[data-diff="easy"]   .diff-hi strong { color: var(--easy-col); }
+    .diff-card[data-diff="medium"] .diff-hi strong { color: var(--medium-col); }
+    .diff-card[data-diff="hard"]   .diff-hi strong { color: var(--hard-col); }
+
+    /* ═══ GAME OVER ═══ */
+    #game-over-screen h1 { color: var(--red); text-shadow: 0 0 40px var(--red); }
+    #game-over-screen .final-score { font-family: var(--font-display); font-size: 56px; font-weight: 900; margin: 10px 0 2px; text-shadow: 0 0 20px var(--cyan); }
+    #game-over-screen .hi-label { font-size: 11px; opacity: 0.5; margin-bottom: 8px; }
+    #new-record-badge { display: inline-block; font-family: var(--font-display); font-size: 10px; letter-spacing: 3px; padding: 4px 14px; border: 1px solid var(--gold); color: var(--gold); text-shadow: 0 0 10px var(--gold); margin-bottom: 14px; animation: pulseGold 1s infinite alternate; }
+    #new-record-badge.hidden { display: none; }
+    @keyframes pulseGold { from { box-shadow: 0 0 5px rgba(255,204,0,0.3); } to { box-shadow: 0 0 18px rgba(255,204,0,0.7); } }
+    .session-stats { display: flex; justify-content: center; gap: 24px; margin-bottom: 14px; font-size: 10px; opacity: 0.6; letter-spacing: 1px; }
+    .session-stats .stat-val { font-family: var(--font-display); font-size: 15px; display: block; color: var(--cyan); opacity: 1; margin-bottom: 2px; }
+    #score-history { margin: 0 0 20px; font-size: 10px; }
+    #score-history .hist-title { font-family: var(--font-display); font-size: 8px; letter-spacing: 3px; margin-bottom: 6px; opacity: 0.4; }
+    #score-history table { width: 100%; border-collapse: collapse; }
+    #score-history td { padding: 3px 8px; text-align: center; opacity: 0.55; }
+    #score-history tr:first-child td { color: var(--gold); opacity: 1; }
+
+    /* Pause badge */
+    #pause-badge { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: var(--font-display); font-size: 14px; letter-spacing: 8px; padding: 10px 24px; border: 1px solid var(--border); background: var(--panel); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); transition: opacity 0.3s; }
+    #pause-badge.hidden { opacity: 0; pointer-events: none; }
+
+    /* Debug overlay */
+    #debug-overlay { position: absolute; bottom: 20px; left: 20px; font-size: 10px; line-height: 1.7; opacity: 0.5; pointer-events: none; }
+    #debug-overlay.hidden { display: none; }
+
+    /* Speed bar */
+    #speed-bar { position: absolute; bottom: 64px; left: 50%; transform: translateX(-50%); display: flex; gap: 3px; align-items: center; }
+    .speed-pip { width: 6px; height: 16px; border: 1px solid rgba(0,255,231,0.3); border-radius: 2px; transition: background 0.3s; }
+    .speed-pip.active { background: var(--cyan); box-shadow: 0 0 6px var(--cyan); }
+
+    /* Custom cursor */
+    #cursor { position: fixed; width: 12px; height: 12px; border: 1px solid var(--cyan); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); box-shadow: 0 0 8px var(--cyan); }
+
+    /* Wall badge */
+    #wall-badge { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); font-size: 9px; letter-spacing: 3px; opacity: 0.5; padding: 5px 12px; border: 1px solid var(--border); background: var(--panel); }
+
+    /* ═══ TOAST ═══ */
+    #toast-container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -90px); pointer-events: none; z-index: 20; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .toast { font-family: var(--font-display); font-size: 11px; letter-spacing: 4px; padding: 8px 20px; border: 1px solid var(--gold); color: var(--gold); background: rgba(5,5,30,0.92); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); text-shadow: 0 0 10px var(--gold); animation: toastIn 0.3s ease, toastOut 0.4s ease 1.8s forwards; border-radius: 2px; }
+    @keyframes toastIn  { from { opacity:0; transform:translateY(10px) scale(0.9); } to { opacity:1; transform:translateY(0) scale(1); } }
+    @keyframes toastOut { from { opacity:1; } to { opacity:0; transform:translateY(-10px); } }
+
+    /* Floating score popup */
+    #score-popup { position: absolute; font-family: var(--font-display); font-size: 18px; font-weight: 900; color: var(--gold); text-shadow: 0 0 12px var(--gold); pointer-events: none; opacity: 0; letter-spacing: 2px; }
+
+    /* Mobile joystick — visibility controlled by JS toggle, NOT media query */
+    #joystick-zone { visibility: hidden; opacity: 0; position: fixed; bottom: 60px; left: 30px; width: 130px; height: 130px; pointer-events: none; z-index: 15; transition: opacity 0.25s, visibility 0.25s; }
+    #joystick-zone.visible { visibility: visible; opacity: 1; pointer-events: all; }
+    #joystick-base { width: 100%; height: 100%; border-radius: 50%; border: 2px solid rgba(0,255,231,0.3); background: rgba(0,255,231,0.05); position: relative; }
+    #joystick-knob { width: 48px; height: 48px; border-radius: 50%; background: rgba(0,255,231,0.2); border: 2px solid var(--cyan); box-shadow: 0 0 14px rgba(0,255,231,0.45); position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); transition: transform 0.04s; }
+
+    /* ── Control mode toggle button ── */
+    #ctrl-toggle {
+      position: fixed;
+      bottom: 20px; right: 20px;
+      pointer-events: all;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: var(--font-display);
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: rgba(0,255,231,0.55);
+      transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
+      -webkit-user-select: none;
+      user-select: none;
+      outline: none;
+    }
+    #ctrl-toggle:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 3px;
+    }
+    #ctrl-toggle:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      box-shadow: 0 0 14px rgba(0,255,231,0.2);
+    }
+    #ctrl-toggle.active-joystick {
+      border-color: rgba(0,255,231,0.6);
+      color: var(--cyan);
+      box-shadow: 0 0 10px rgba(0,255,231,0.15);
+    }
+    #ctrl-toggle.active-swipe {
+      border-color: rgba(123,47,255,0.6);
+      color: var(--purple);
+      box-shadow: 0 0 10px rgba(123,47,255,0.2);
+    }
+    #ctrl-toggle .ctrl-icon {
+      font-size: 14px;
+      line-height: 1;
+    }
+    #ctrl-toggle .ctrl-label { letter-spacing: 2px; }
+
+    /* Hide custom cursor in joystick/touch modes */
+    body.touch-mode #cursor { display: none; }
+    body.touch-mode { cursor: auto; }
+
+    /* WebGL fallback */
+    #no-webgl { display: none; position: fixed; inset: 0; background: var(--bg); flex-direction: column; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 18px; text-align: center; gap: 12px; }
+    #no-webgl.visible { display: flex; }
+
+    /* Animations */
+    @keyframes pulseGlow { 0%,100% { text-shadow: 0 0 20px var(--cyan); } 50% { text-shadow: 0 0 50px var(--cyan), 0 0 100px var(--cyan); } }
+    .glow-pulse { animation: pulseGlow 2s infinite; }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .screen, #level-select-screen { min-width: 92vw; padding: 28px 16px; }
+      .screen h1, #level-select-screen h1 { font-size: 30px; }
+      .diff-cards { gap: 8px; }
+      .diff-card { padding: 12px 8px; min-width: 0; }
+      #settings-panel { width: 180px; }
+    }
+    @media (max-width: 380px) {
+      .diff-cards { flex-direction: column; align-items: center; }
+      .diff-card { width: 80%; }
+    }
+  </style>
+  <script src="three.min.js" defer></script>
+</head>
+<body>
+
+<div id="loading-screen">
+  <h1>SERPENTINE</h1>
+  <div class="loading-text">LOADING...</div>
+  <div class="loading-spinner" aria-hidden="true"></div>
+</div>
+
+<noscript><div style="position:fixed;inset:0;background:#050510;color:#00ffe7;font-family:monospace;display:flex;align-items:center;justify-content:center;font-size:18px;text-align:center;padding:20px;z-index:10000">JavaScript is required to run Serpentine.</div></noscript>
+
+<div id="no-webgl">
+  <div>⚠ WebGL Required</div>
+  <div style="font-size:12px;opacity:0.6">Enable hardware acceleration in your browser settings.</div>
+</div>
+
+<canvas id="c"></canvas>
+<div id="cursor"></div>
+
+<!-- Mobile touch joystick -->
+<div id="joystick-zone" aria-hidden="true">
+  <div id="joystick-base"><div id="joystick-knob"></div></div>
+</div>
+
+<!-- Control mode toggle — always visible, works on PC and mobile -->
+<button id="ctrl-toggle" type="button" aria-label="Toggle control mode">
+  <span class="ctrl-icon" id="ctrl-icon">🕹</span>
+  <span class="ctrl-label" id="ctrl-label">JOYSTICK</span>
+</button>
+
+<div id="hud">
+
+  <!-- Score panel -->
+  <div id="score-panel" class="panel">
+    <div class="label">Score</div>
+    <div class="value" id="score-val">0</div>
+    <div class="hi">HI <span id="hi-val">0</span></div>
+    <div id="level-badge">MEDIUM</div>
+  </div>
+
+  <!-- Info panel -->
+  <div id="info-panel" class="panel">
+    <div>LEN <span id="len-val">1</span></div>
+    <div>SPD <span id="spd-val">10.0</span></div>
+    <div id="wall-mode-info">WALLS ON</div>
+  </div>
+
+  <!-- Wall badge -->
+  <div id="wall-badge">WALLS ON</div>
+
+  <!-- Speed bar -->
+  <div id="speed-bar">
+    <div class="speed-pip"></div><div class="speed-pip"></div><div class="speed-pip"></div>
+    <div class="speed-pip"></div><div class="speed-pip"></div><div class="speed-pip"></div>
+    <div class="speed-pip"></div><div class="speed-pip"></div><div class="speed-pip"></div>
+    <div class="speed-pip"></div>
+  </div>
+
+  <!-- Settings panel -->
+  <div id="settings-panel" class="panel hidden">
+    <h3>⚙ Settings</h3>
+    <div class="setting-row"><label for="quality-select">Quality</label>
+      <select id="quality-select">
+        <option value="low">Low</option>
+        <option value="med" selected>Medium</option>
+        <option value="high">High</option>
+      </select>
+    </div>
+    <div class="setting-row"><label for="particle-count">Particles</label><input type="range" id="particle-count" min="5" max="60" value="30" step="5"></div>
+    <div class="setting-row"><label for="smooth-slider">Smoothing</label><input type="range" id="smooth-slider"   min="1" max="20" value="8"  step="1"></div>
+    <div class="setting-row"><label for="speed-slider">Speed</label>    <input type="range" id="speed-slider"    min="5" max="25" value="10" step="1"></div>
+    <div class="setting-row"><label for="spacing-slider">Spacing</label>  <input type="range" id="spacing-slider"  min="0.6" max="1.4" value="0.9" step="0.1"></div>
+  </div>
+
+  <!-- Pause badge -->
+  <div id="pause-badge" class="hidden">PAUSED</div>
+
+  <!-- Toasts -->
+  <div id="toast-container" role="status" aria-live="polite" aria-atomic="false"></div>
+
+  <!-- Floating score popup -->
+  <div id="score-popup" aria-hidden="true"></div>
+
+  <!-- ═══ LEVEL SELECT SCREEN ═══ -->
+  <div id="level-select-screen" class="screen panel">
+    <h1 class="glow-pulse">SERPENTINE</h1>
+    <div class="subtitle">3D · POINTER SNAKE</div>
+    <div class="diff-cards">
+      <div class="diff-card" data-diff="easy" role="button" tabindex="0" aria-label="Easy difficulty">
+        <div class="diff-name">EASY</div>
+        <div class="diff-desc">Wrap · Slow<br>Chill Run</div>
+        <div class="diff-hi">BEST<strong id="hi-easy">0</strong></div>
+      </div>
+      <div class="diff-card" data-diff="medium" role="button" tabindex="0" aria-label="Medium difficulty">
+        <div class="diff-name">MEDIUM</div>
+        <div class="diff-desc">Walls · Classic<br>Balanced</div>
+        <div class="diff-hi">BEST<strong id="hi-medium">0</strong></div>
+      </div>
+      <div class="diff-card" data-diff="hard" role="button" tabindex="0" aria-label="Hard difficulty">
+        <div class="diff-name">HARD</div>
+        <div class="diff-desc">Fast · Tight<br>No Mercy</div>
+        <div class="diff-hi">BEST<strong id="hi-hard">0</strong></div>
+      </div>
+    </div>
+    <button class="btn" id="diff-play-btn" type="button" aria-label="Play selected difficulty">PLAY</button>
+  </div>
+
+  <!-- ═══ START / CONTROLS SCREEN ═══ -->
+  <div id="start-screen" class="screen panel hidden">
+    <h1 class="glow-pulse">READY</h1>
+    <div class="subtitle" id="start-diff-label">MEDIUM · WALLS ON</div>
+    <div class="controls-list">
+      <div><span>MOUSE</span> Guide snake</div>
+      <div><span>WASD/↑↓←→</span> Keyboard</div>
+      <div><span>SPACE</span> Pause/Resume</div>
+      <div><span>R</span> Restart</div>
+      <div><span>T</span> Toggle walls</div>
+      <div><span>M</span> Control mode</div>
+      <div><span>ESC</span> Settings</div>
+      <div><span>` (backtick)</span> Debug</div>
+    </div>
+    <button class="btn" id="start-btn" type="button" aria-label="Start game">START</button>
+  </div>
+
+  <!-- ═══ GAME OVER SCREEN ═══ -->
+  <div id="game-over-screen" class="screen panel hidden">
+    <h1>TERMINATED</h1>
+    <div class="final-score" id="final-score">0</div>
+    <div class="hi-label">HIGH SCORE: <span id="final-hi">0</span></div>
+    <div id="new-record-badge" class="hidden">★ NEW RECORD ★</div>
+    <div class="session-stats">
+      <div><span class="stat-val" id="stat-time">0:00</span>TIME</div>
+      <div><span class="stat-val" id="stat-food">0</span>FOOD</div>
+      <div><span class="stat-val" id="stat-len">0</span>MAX LEN</div>
+    </div>
+    <div id="score-history">
+      <div class="hist-title">RECENT SCORES</div>
+      <table id="history-table"><tbody></tbody></table>
+    </div>
+    <button class="btn"           id="restart-btn" type="button" aria-label="Play again same difficulty">RETRY</button>
+    <button class="btn secondary" id="menu-btn"    type="button" aria-label="Return to difficulty menu">MENU</button>
+  </div>
+
+  <!-- Debug overlay -->
+  <div id="debug-overlay" class="hidden">
+    <div>HEAD: <span id="dbg-head">—</span></div>
+    <div>SEGS: <span id="dbg-segs">—</span></div>
+    <div>FOOD: <span id="dbg-food">—</span></div>
+    <div>FPS:  <span id="dbg-fps">—</span></div>
+    <div>SPACING: <span id="dbg-spacing">—</span></div>
+    <div>COLLISION: <span id="dbg-coll">none</span></div>
+  </div>
+
+</div><!-- #hud -->
+
+<script>
+'use strict';
+
+function initSerpentine() {
+  // If the CDN script is blocked or unavailable, clear loader and show fallback UI.
+  if (!window.THREE) {
+    const fallbackTitle = document.querySelector('#no-webgl div:first-child');
+    const fallbackHint = document.querySelector('#no-webgl div:nth-child(2)');
+    if (fallbackTitle) fallbackTitle.textContent = '⚠ 3D Engine Failed To Load';
+    if (fallbackHint) fallbackHint.textContent = 'Check network / privacy extensions and reload.';
+    document.getElementById('no-webgl').classList.add('visible');
+    document.getElementById('c').style.display = 'none';
+    document.getElementById('loading-screen').style.display = 'none';
+    return;
+  }
+
+// ══════════════════════════════════════════════════════
+//  CACHE — safe localStorage wrapper (like Dino game)
+// ══════════════════════════════════════════════════════
+const CACHE = {
+  PFX: 'serpentine_',
+  get(key, fallback) {
+    try {
+      const raw = localStorage.getItem(this.PFX + key);
+      if (raw === null) return fallback !== undefined ? fallback : null;
+      return JSON.parse(raw);
+    } catch(e) { return fallback !== undefined ? fallback : null; }
+  },
+  set(key, val) {
+    try { localStorage.setItem(this.PFX + key, JSON.stringify(val)); } catch(e) {}
+  },
+  saveRun(diff, score, meta) {
+    // Returns { isNew: bool, hiScores: object }
+    const hi   = this.get('hi',      { easy: 0, medium: 0, hard: 0 });
+    const hist = this.get('history', { easy: [], medium: [], hard: [] });
+    const isNew = score > (hi[diff] || 0);
+    if (isNew) hi[diff] = score;
+
+    if (!hist[diff]) hist[diff] = [];
+    hist[diff].unshift({ score, time: meta.time, food: meta.food, len: meta.len });
+    if (hist[diff].length > 5) hist[diff].length = 5;
+
+    const games = this.get('games', 0);
+    this.set('hi',       hi);
+    this.set('history',  hist);
+    this.set('games',    games + 1);
+    this.set('last_diff', diff);
+    return { isNew, hiScores: hi };
+  }
+};
+
+// ══════════════════════════════════════════════════════
+//  DIFFICULTY PRESETS
+// ══════════════════════════════════════════════════════
+const DIFF = {
+  easy: {
+    label: 'EASY',   color: '#39ff6e',
+    initialSpeed: 7, wallsEnabled: false,
+    scorePerFood: 10, speedIncreasePerFood: 0.04,
+    selfCollisionFrom: 12, boardSize: 22, growthPerFood: 3,
+    descLine: 'EASY · WRAP MODE',
+  },
+  medium: {
+    label: 'MEDIUM', color: '#ffcc00',
+    initialSpeed: 10, wallsEnabled: true,
+    scorePerFood: 15, speedIncreasePerFood: 0.1,
+    selfCollisionFrom: 8, boardSize: 20, growthPerFood: 3,
+    descLine: 'MEDIUM · WALLS ON',
+  },
+  hard: {
+    label: 'HARD',   color: '#ff3366',
+    initialSpeed: 15, wallsEnabled: true,
+    scorePerFood: 25, speedIncreasePerFood: 0.2,
+    selfCollisionFrom: 5, boardSize: 18, growthPerFood: 4,
+    descLine: 'HARD · NO MERCY',
+  },
+};
+
+// ══════════════════════════════════════════════════════
+//  MILESTONE ACHIEVEMENTS
+// ══════════════════════════════════════════════════════
+const MILESTONES = [
+  { score: 50,   msg: '⚡ WARMED UP'    },
+  { score: 100,  msg: '🎯 CENTURION'    },
+  { score: 250,  msg: '🔥 SERPENT LORD' },
+  { score: 500,  msg: '💀 APEX PREDATOR'},
+  { score: 1000, msg: '★  LEGENDARY  ★' },
+];
+
+// ══════════════════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════════════════
+const CONFIG = {
+  boardSize: 20, boardY: 0,
+  initialSpeed: 10, segmentSpacing: 0.9, segmentCountLimit: 500,
+  growthPerFood: 3, headRadius: 0.45, segRadius: 0.36, foodRadius: 0.5,
+  interactionSmoothing: 8, keyMoveSpeed: 14,
+  camHeight: 28, camDistance: 10, camFOV: 55, camFollowStrength: 0.04,
+  particleCount: 30, particleLife: 0.9, particleSpeed: 8,
+  scorePerFood: 15, speedIncreasePerFood: 0.1, selfCollisionFrom: 8,
+  quality: 'med', wallsEnabled: true, debugVisible: false,
+};
+
+// ══════════════════════════════════════════════════════
+//  INIT PERSISTED DATA & UI
+// ══════════════════════════════════════════════════════
+let currentDifficulty = (() => {
+  const last = CACHE.get('last_diff', 'medium');
+  return (last in DIFF) ? last : 'medium';
+})();
+
+function refreshDiffCards() {
+  const hi = CACHE.get('hi', { easy: 0, medium: 0, hard: 0 });
+  document.getElementById('hi-easy').textContent   = hi.easy   || 0;
+  document.getElementById('hi-medium').textContent = hi.medium || 0;
+  document.getElementById('hi-hard').textContent   = hi.hard   || 0;
+  document.querySelectorAll('.diff-card').forEach(c => c.classList.remove('selected'));
+  const sel = document.querySelector(`.diff-card[data-diff="${currentDifficulty}"]`);
+  if (sel) sel.classList.add('selected');
+}
+refreshDiffCards();
+
+// Restore saved quality
+const savedSettings = CACHE.get('settings', { quality: 'med' });
+if (savedSettings.quality) document.getElementById('quality-select').value = savedSettings.quality;
+
+// ══════════════════════════════════════════════════════
+//  WEBGL CHECK
+// ══════════════════════════════════════════════════════
+const hasWebGL = (() => {
+  try {
+    const c = document.createElement('canvas');
+    return !!(c.getContext('webgl') || c.getContext('experimental-webgl'));
+  } catch(e) {
+    return false;
+  }
+})();
+
+if (!hasWebGL) {
+  document.getElementById('no-webgl').classList.add('visible');
+  document.getElementById('c').style.display = 'none';
+  document.getElementById('loading-screen').style.display = 'none';
+  return;
+}
+
+// ══════════════════════════════════════════════════════
+//  THREE.JS SCENE SETUP
+// ══════════════════════════════════════════════════════
+const canvas   = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled   = true;
+renderer.shadowMap.type      = THREE.PCFSoftShadowMap;
+renderer.outputEncoding      = THREE.sRGBEncoding;
+renderer.toneMapping          = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure  = 1.2;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x050510);
+scene.fog = new THREE.FogExp2(0x050510, 0.022);
+
+const camera = new THREE.PerspectiveCamera(CONFIG.camFOV, window.innerWidth / window.innerHeight, 0.1, 200);
+camera.position.set(0, CONFIG.camHeight, CONFIG.camDistance);
+camera.lookAt(0, 0, 0);
+
+// Lights
+const ambientLight = new THREE.AmbientLight(0x111133, 0.8);
+scene.add(ambientLight);
+const dirLight = new THREE.DirectionalLight(0x4488ff, 1.2);
+dirLight.position.set(15, 30, 15);
+dirLight.castShadow = true;
+dirLight.shadow.mapSize.set(1024, 1024);
+dirLight.shadow.camera.near = 0.5; dirLight.shadow.camera.far = 80;
+dirLight.shadow.camera.left = -25; dirLight.shadow.camera.right = 25;
+dirLight.shadow.camera.top  =  25; dirLight.shadow.camera.bottom = -25;
+scene.add(dirLight);
+const rimLight1 = new THREE.PointLight(0x00ffe7, 3, 40); rimLight1.position.set(-15, 8, -15); scene.add(rimLight1);
+const rimLight2 = new THREE.PointLight(0x7b2fff, 2, 40); rimLight2.position.set( 15, 8,  15); scene.add(rimLight2);
+
+// Grid (rebuilt when board size changes)
+let gridGroup = new THREE.Group();
+scene.add(gridGroup);
+function buildGrid() {
+  gridGroup.clear();
+  const B = CONFIG.boardSize, step = 2;
+  const lm = new THREE.LineBasicMaterial({ color: 0x0a1a3a, transparent: true, opacity: 0.6 });
+  const am = new THREE.LineBasicMaterial({ color: 0x0d2d5a, transparent: true, opacity: 0.9 });
+  for (let x = -B; x <= B; x += step) {
+    gridGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x,0,-B),new THREE.Vector3(x,0,B)]), (x%10===0)?am:lm));
+  }
+  for (let z = -B; z <= B; z += step) {
+    gridGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-B,0,z),new THREE.Vector3(B,0,z)]), (z%10===0)?am:lm));
+  }
+  gridGroup.add(new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(-B,0.01,-B),new THREE.Vector3(B,0.01,-B),
+      new THREE.Vector3(B,0.01,B),  new THREE.Vector3(-B,0.01,B),
+      new THREE.Vector3(-B,0.01,-B)
+    ]),
+    new THREE.LineBasicMaterial({ color: 0x00ffe7, transparent: true, opacity: 0.4 })
+  ));
+  const ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(B*2, B*2),
+    new THREE.MeshStandardMaterial({ color: 0x020208, roughness: 0.95, metalness: 0.1 })
+  );
+  ground.rotation.x = -Math.PI / 2;
+  ground.receiveShadow = true;
+  gridGroup.add(ground);
+}
+buildGrid();
+
+// Walls
+const wallGroup = new THREE.Group();
+scene.add(wallGroup);
+function buildWalls() {
+  wallGroup.clear();
+  if (!CONFIG.wallsEnabled) return;
+  const B = CONFIG.boardSize, h = 1.2;
+  const mat = new THREE.MeshStandardMaterial({ color: 0x0a2040, emissive: 0x001428, transparent: true, opacity: 0.3, roughness: 0.5 });
+  [
+    { sx: B*2+0.2, sz: 0.2, px: 0, pz: -B },
+    { sx: B*2+0.2, sz: 0.2, px: 0, pz:  B },
+    { sx: 0.2, sz: B*2+0.2, px: -B, pz: 0 },
+    { sx: 0.2, sz: B*2+0.2, px:  B, pz: 0 },
+  ].forEach(c => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(c.sx, h, c.sz), mat);
+    m.position.set(c.px, h/2, c.pz);
+    wallGroup.add(m);
+  });
+}
+buildWalls();
+
+// Snake head
+const headGeo  = new THREE.SphereGeometry(CONFIG.headRadius, 16, 12);
+const headMat  = new THREE.MeshStandardMaterial({ color: 0x00ffe7, emissive: 0x00ffe7, emissiveIntensity: 0.8, roughness: 0.1, metalness: 0.3 });
+const headMesh = new THREE.Mesh(headGeo, headMat);
+headMesh.castShadow = true;
+scene.add(headMesh);
+const headLight = new THREE.PointLight(0x00ffe7, 2.5, 6);
+scene.add(headLight);
+const eyeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 1.5 });
+const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 6), eyeMat);
+const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 6), eyeMat);
+eyeL.position.set(-0.2, 0.2, 0.35); eyeR.position.set(0.2, 0.2, 0.35);
+headMesh.add(eyeL); headMesh.add(eyeR);
+
+// Body segments (InstancedMesh)
+const MAX_SEGS  = CONFIG.segmentCountLimit;
+const bodyMesh  = new THREE.InstancedMesh(
+  new THREE.SphereGeometry(CONFIG.segRadius, 10, 8),
+  new THREE.MeshStandardMaterial({ color: 0x7b2fff, emissive: 0x3a00cc, emissiveIntensity: 0.4, roughness: 0.2, metalness: 0.5 }),
+  MAX_SEGS
+);
+bodyMesh.castShadow = true;
+bodyMesh.count = 0;
+scene.add(bodyMesh);
+const _dummy = new THREE.Object3D();
+const _color  = new THREE.Color();
+function updateBodyInstances(segs) {
+  const n = Math.min(segs.length, MAX_SEGS);
+  bodyMesh.count = n;
+  for (let i = 0; i < n; i++) {
+    const t = i / Math.max(n - 1, 1);
+    _dummy.position.copy(segs[i]);
+    _dummy.scale.setScalar(1 - t * 0.25);
+    _dummy.updateMatrix();
+    bodyMesh.setMatrixAt(i, _dummy.matrix);
+    _color.setRGB(0.0 + t * 0.47, 0.8 - t * 0.6, 0.9 - t * 0.1);
+    bodyMesh.setColorAt(i, _color);
+  }
+  bodyMesh.instanceMatrix.needsUpdate = true;
+  if (bodyMesh.instanceColor) bodyMesh.instanceColor.needsUpdate = true;
+}
+
+// Food
+const foodMesh  = new THREE.Mesh(new THREE.OctahedronGeometry(CONFIG.foodRadius, 0), new THREE.MeshStandardMaterial({ color: 0xffcc00, emissive: 0xffaa00, emissiveIntensity: 1.0, roughness: 0.1, metalness: 0.6 }));
+foodMesh.castShadow = true;
+scene.add(foodMesh);
+const foodLight = new THREE.PointLight(0xffcc00, 3, 8);
+scene.add(foodLight);
+
+// Particles
+const MAX_PARTICLES    = 120;
+const particleGeo      = new THREE.BufferGeometry();
+const particlePositions = new Float32Array(MAX_PARTICLES * 3);
+particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+const particleMat = new THREE.PointsMaterial({ color: 0xffcc00, size: 0.25, transparent: true, opacity: 1, depthWrite: false, blending: THREE.AdditiveBlending });
+const particleSystem = new THREE.Points(particleGeo, particleMat);
+scene.add(particleSystem);
+const particles = [];
+function spawnParticles(pos) {
+  for (let i = 0; i < CONFIG.particleCount; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const elev  = (Math.random() - 0.5) * Math.PI;
+    const spd   = (0.5 + Math.random()) * CONFIG.particleSpeed;
+    particles.push({ pos: pos.clone(), vel: new THREE.Vector3(Math.cos(angle)*Math.cos(elev)*spd, Math.abs(Math.sin(elev))*spd, Math.sin(angle)*Math.cos(elev)*spd), life: 1.0 });
+  }
+}
+function updateParticles(dt) {
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.life -= dt / CONFIG.particleLife;
+    p.vel.y -= 9.8 * dt;
+    p.pos.addScaledVector(p.vel, dt);
+    if (p.life <= 0) particles.splice(i, 1);
+  }
+  const count = Math.min(particles.length, MAX_PARTICLES);
+  for (let i = 0; i < count; i++) {
+    particlePositions[i*3]   = particles[i].pos.x;
+    particlePositions[i*3+1] = particles[i].pos.y;
+    particlePositions[i*3+2] = particles[i].pos.z;
+  }
+  particleGeo.attributes.position.needsUpdate = true;
+  particleSystem.geometry.setDrawRange(0, count);
+  particleMat.opacity = count > 0 ? 0.9 : 0;
+}
+
+// Debug spheres
+const debugGroup  = new THREE.Group(); scene.add(debugGroup);
+const dbgMat      = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+const dbgSpheres  = Array.from({ length: 8 }, () => {
+  const m = new THREE.Mesh(new THREE.SphereGeometry(CONFIG.headRadius * 1.2, 8, 6), dbgMat);
+  m.visible = false; debugGroup.add(m); return m;
+});
+function updateDebugSpheres(segs) {
+  if (!CONFIG.debugVisible) { dbgSpheres.forEach(m => m.visible = false); return; }
+  const step = Math.max(1, Math.floor(segs.length / dbgSpheres.length));
+  dbgSpheres.forEach((m, i) => {
+    const idx = i * step;
+    m.visible = idx < segs.length;
+    if (m.visible) m.position.copy(segs[idx]);
+  });
+}
+
+// Raycaster
+const raycaster = new THREE.Raycaster();
+const gamePlane  = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+const mouseNDC   = new THREE.Vector2(-999, -999);
+const mouseWorld = new THREE.Vector3();
+function updateMouseWorld() {
+  raycaster.setFromCamera(mouseNDC, camera);
+  raycaster.ray.intersectPlane(gamePlane, mouseWorld);
+}
+
+// ══════════════════════════════════════════════════════
+//  GAME STATE
+// ══════════════════════════════════════════════════════
+let state   = 'levelselect';
+let score   = 0;
+let hiScore = (CACHE.get('hi', { easy: 0, medium: 0, hard: 0 }))[currentDifficulty] || 0;
+let currentSpeed = CONFIG.initialSpeed;
+let wallsEnabled = CONFIG.wallsEnabled;
+let growthPending = 0;
+let frameCount = 0, lastFpsTime = 0, fps = 60;
+let lowFpsStreak = 0;
+
+// Session
+let sessionStart    = 0;
+let sessionFood     = 0;
+let sessionMaxLen   = 0;
+let milestoneDone   = new Set();
+
+// Snake
+const headPos  = new THREE.Vector3(0, 0.45, 0);
+let   headDir  = new THREE.Vector3(0, 0, -1);
+const segments = [];
+
+// Food
+const foodPos = new THREE.Vector3();
+
+// Input
+const keys = {};
+let usingKeyboard = false;
+let keyDir = new THREE.Vector3();
+const speedPips = document.querySelectorAll('.speed-pip');
+
+// Pre-allocated work vectors
+const _mouseFlat = new THREE.Vector3();
+const _toMouse   = new THREE.Vector3();
+const _segDiff   = new THREE.Vector3();
+const _headPrev  = new THREE.Vector3();
+const _sweepAB   = new THREE.Vector3();
+const _sweepAP   = new THREE.Vector3();
+const _sweepHit  = new THREE.Vector3();
+
+function pointToSegmentDistanceSq(point, segA, segB) {
+  _sweepAB.copy(segB).sub(segA);
+  const abLenSq = _sweepAB.lengthSq();
+  if (abLenSq < 1e-8) return point.distanceToSquared(segA);
+  _sweepAP.copy(point).sub(segA);
+  let t = _sweepAP.dot(_sweepAB) / abLenSq;
+  t = Math.max(0, Math.min(1, t));
+  _sweepHit.copy(segA).addScaledVector(_sweepAB, t);
+  return point.distanceToSquared(_sweepHit);
+}
+
+// ══════════════════════════════════════════════════════
+//  CACHED SLIDER VALUES
+// ══════════════════════════════════════════════════════
+let cachedSpacing   = parseFloat(document.getElementById('spacing-slider').value);
+let cachedSmoothing = parseFloat(document.getElementById('smooth-slider').value);
+document.getElementById('spacing-slider').addEventListener('input', e => { cachedSpacing   = parseFloat(e.target.value); });
+document.getElementById('smooth-slider').addEventListener('input',  e => { cachedSmoothing = parseFloat(e.target.value); });
+
+// ══════════════════════════════════════════════════════
+//  TOAST & SCORE POPUP
+// ══════════════════════════════════════════════════════
+function showToast(msg) {
+  const el = document.createElement('div');
+  el.className   = 'toast';
+  el.textContent = msg;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 2300);
+}
+
+function showScorePopup(amount, wx, wz) {
+  const popup = document.getElementById('score-popup');
+  const v = new THREE.Vector3(wx, 0.5, wz);
+  v.project(camera);
+  popup.textContent  = '+' + amount;
+  popup.style.left   = ((v.x * 0.5 + 0.5) * window.innerWidth)  + 'px';
+  popup.style.top    = ((-v.y * 0.5 + 0.5) * window.innerHeight) + 'px';
+  popup.style.opacity   = '1';
+  popup.style.transform = 'translate(-50%,-50%)';
+  let start = null;
+  function tick(ts) {
+    if (!start) start = ts;
+    const p = Math.min((ts - start) / 750, 1);
+    popup.style.opacity   = String(1 - p);
+    popup.style.transform = `translate(-50%, calc(-50% - ${p * 40}px)) scale(${1 + p * 0.25})`;
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+// ══════════════════════════════════════════════════════
+//  APPLY DIFFICULTY
+// ══════════════════════════════════════════════════════
+function applyDifficulty(diff) {
+  const p = DIFF[diff];
+  CONFIG.initialSpeed           = p.initialSpeed;
+  CONFIG.wallsEnabled           = p.wallsEnabled;
+  CONFIG.scorePerFood           = p.scorePerFood;
+  CONFIG.speedIncreasePerFood   = p.speedIncreasePerFood;
+  CONFIG.selfCollisionFrom      = p.selfCollisionFrom;
+  CONFIG.boardSize              = p.boardSize;
+  CONFIG.growthPerFood          = p.growthPerFood;
+  wallsEnabled = p.wallsEnabled;
+
+  buildGrid();
+  buildWalls();
+
+  const badge = document.getElementById('level-badge');
+  badge.textContent     = p.label;
+  badge.style.color     = p.color;
+  badge.style.borderColor = p.color;
+
+  const wt = p.wallsEnabled ? 'WALLS ON' : 'WRAP MODE';
+  document.getElementById('wall-badge').textContent     = wt;
+  document.getElementById('wall-mode-info').textContent = wt;
+  document.getElementById('start-diff-label').textContent = p.descLine;
+
+  hiScore = (CACHE.get('hi', { easy: 0, medium: 0, hard: 0 }))[diff] || 0;
+  document.getElementById('hi-val').textContent   = hiScore;
+  document.getElementById('final-hi').textContent = hiScore;
+
+  document.getElementById('speed-slider').value = String(p.initialSpeed);
+  cachedSpacing   = parseFloat(document.getElementById('spacing-slider').value);
+  cachedSmoothing = parseFloat(document.getElementById('smooth-slider').value);
+  CACHE.set('last_diff', diff);
+}
+
+// ══════════════════════════════════════════════════════
+//  INIT GAME
+// ══════════════════════════════════════════════════════
+function initGame() {
+  score         = 0;
+  currentSpeed  = CONFIG.initialSpeed;
+  growthPending = 0;
+  particles.length = 0;
+  sessionStart  = Date.now();
+  sessionFood   = 0;
+  sessionMaxLen = 0;
+  milestoneDone.clear();
+
+  headPos.set(0, 0.45, 0);
+  headDir.set(0, 0, -1);
+  segments.length = 0;
+  for (let i = 1; i <= 4; i++) segments.push(new THREE.Vector3(0, 0.36, i * CONFIG.segmentSpacing));
+
+  headMat.color.setHex(0x00ffe7);
+  headMat.emissive.setHex(0x00ffe7);
+  headLight.color.setHex(0x00ffe7);
+
+  spawnFood();
+  updateUI();
+}
+
+function spawnFood() {
+  const B = CONFIG.boardSize - 2;
+  let tries = 0;
+  do {
+    foodPos.set((Math.random()*2-1)*B, 0.5, (Math.random()*2-1)*B);
+    tries++;
+  } while (isTooCloseToSnake(foodPos) && tries < 50);
+  foodMesh.position.copy(foodPos);
+  foodLight.position.copy(foodPos).y += 1;
+}
+
+function isTooCloseToSnake(pos) {
+  if (pos.distanceTo(headPos) < 2.5) return true;
+  for (const s of segments) if (pos.distanceTo(s) < 2.5) return true;
+  return false;
+}
+
+// ══════════════════════════════════════════════════════
+//  CLOCK & CAMERA
+// ══════════════════════════════════════════════════════
+const clock      = new THREE.Clock();
+let   camTarget  = new THREE.Vector3();
+let   camCurrent = new THREE.Vector3(0, CONFIG.camHeight, CONFIG.camDistance);
+const camLookAt  = new THREE.Vector3();
+
+// ══════════════════════════════════════════════════════
+//  SCORE FLASH
+// ══════════════════════════════════════════════════════
+let flashTimer = null;
+function flashScore() {
+  const el = document.getElementById('score-val');
+  el.classList.add('flash');
+  if (flashTimer) clearTimeout(flashTimer);
+  flashTimer = setTimeout(() => el.classList.remove('flash'), 320);
+}
+
+// ══════════════════════════════════════════════════════
+//  MILESTONES
+// ══════════════════════════════════════════════════════
+function checkMilestones() {
+  for (const m of MILESTONES) {
+    if (score >= m.score && !milestoneDone.has(m.score)) {
+      milestoneDone.add(m.score);
+      showToast(m.msg);
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  UPDATE
+// ══════════════════════════════════════════════════════
+function update(dt) {
+  if (state !== 'play') return;
+
+  _headPrev.copy(headPos);
+  updateMouseWorld();
+  const spacing   = cachedSpacing;
+  const smoothing = cachedSmoothing;
+
+  if (usingKeyboard) {
+    if (keyDir.lengthSq() > 0) { headDir.lerp(keyDir, 0.3); headDir.normalize(); }
+    headPos.addScaledVector(headDir, currentSpeed * dt);
+  } else {
+    _mouseFlat.set(mouseWorld.x, headPos.y, mouseWorld.z);
+    _toMouse.copy(_mouseFlat).sub(headPos);
+    const d = _toMouse.length();
+    if (d > 0.05) { _toMouse.normalize(); headDir.lerp(_toMouse, Math.min(1, smoothing / 20)); headDir.normalize(); }
+    headPos.addScaledVector(headDir, Math.min(currentSpeed * dt, d));
+  }
+
+  const B = CONFIG.boardSize;
+  if (wallsEnabled) {
+    const wallLimit = B - CONFIG.headRadius;
+    if (Math.abs(headPos.x) > wallLimit || Math.abs(headPos.z) > wallLimit) { triggerDeath('wall'); return; }
+  } else {
+    if (headPos.x >  B) headPos.x = -B;
+    if (headPos.x < -B) headPos.x =  B;
+    if (headPos.z >  B) headPos.z = -B;
+    if (headPos.z < -B) headPos.z =  B;
+  }
+
+  if (growthPending > 0 && Math.random() < 0.5) {
+    const tail   = segments.length > 0 ? segments[segments.length - 1] : headPos;
+    const before = segments.length > 1 ? segments[segments.length - 2] : headPos;
+    const dir    = tail.clone().sub(before);
+    // Guard: if tail === before (zero-length), fall back to -headDir so segment doesn't NaN-out
+    if (dir.lengthSq() < 0.0001) dir.copy(headDir).negate();
+    dir.normalize();
+    segments.push(tail.clone().add(dir.multiplyScalar(spacing)));
+    growthPending--;
+  }
+
+  const checkFrom = Math.min(CONFIG.selfCollisionFrom, segments.length);
+  const collisionRadius = CONFIG.headRadius + CONFIG.segRadius - 0.05;
+  const collisionRadiusSq = collisionRadius * collisionRadius;
+  for (let i = checkFrom; i < segments.length; i++) {
+    const hitNow = headPos.distanceToSquared(segments[i]) < collisionRadiusSq;
+    const hitSweep = pointToSegmentDistanceSq(segments[i], _headPrev, headPos) < collisionRadiusSq;
+    if (hitNow || hitSweep) {
+      if (CONFIG.debugVisible) document.getElementById('dbg-coll').textContent = 'seg ' + i;
+      triggerDeath('self'); return;
+    }
+  }
+
+  for (let i = 0; i < segments.length; i++) {
+    const prev = i === 0 ? headPos : segments[i - 1];
+    const curr = segments[i];
+    _segDiff.copy(curr).sub(prev);
+    const dist = _segDiff.length();
+    if (dist > spacing) { _segDiff.normalize().multiplyScalar(dist - spacing); curr.sub(_segDiff); }
+    curr.y = 0.36;
+  }
+
+  const curLen = segments.length + 1;
+  if (curLen > sessionMaxLen) sessionMaxLen = curLen;
+
+  if (headPos.distanceTo(foodPos) < CONFIG.headRadius + CONFIG.foodRadius + 0.1) {
+    score        += CONFIG.scorePerFood;
+    currentSpeed += CONFIG.speedIncreasePerFood;
+    growthPending += CONFIG.growthPerFood;
+    sessionFood++;
+    showScorePopup(CONFIG.scorePerFood, foodPos.x, foodPos.z);
+    spawnParticles(foodPos.clone());
+    spawnFood();
+    flashScore();
+    checkMilestones();
+    // updateUI() runs at end of every update() tick — no need to call twice
+  }
+
+  headPos.y = 0.45;
+  headMesh.position.copy(headPos);
+  headLight.position.copy(headPos).y += 0.8;
+  if (headDir.lengthSq() > 0.01) headMesh.rotation.y = Math.atan2(headDir.x, headDir.z);
+
+  updateBodyInstances(segments);
+
+  foodMesh.rotation.y += dt * 1.5;
+  foodMesh.position.y  = 0.5 + Math.sin(Date.now() * 0.003) * 0.15;
+  foodLight.position.y = foodMesh.position.y + 0.6;
+
+  updateParticles(dt);
+  updateDebugSpheres(segments);
+
+  if (CONFIG.debugVisible) {
+    document.getElementById('dbg-head').textContent    = headPos.x.toFixed(1) + ', ' + headPos.z.toFixed(1);
+    document.getElementById('dbg-segs').textContent    = segments.length;
+    document.getElementById('dbg-food').textContent    = foodPos.x.toFixed(1) + ', ' + foodPos.z.toFixed(1);
+    document.getElementById('dbg-spacing').textContent = spacing.toFixed(1);
+  }
+
+  const zf = Math.min(1, segments.length / 50);
+  camTarget.set(headPos.x * 0.3, CONFIG.camHeight + zf * 15, headPos.z * 0.3 + CONFIG.camDistance + zf * 6);
+  camCurrent.lerp(camTarget, CONFIG.camFollowStrength);
+  camera.position.copy(camCurrent);
+  camLookAt.set(headPos.x * 0.2, 0, headPos.z * 0.2);
+  camera.lookAt(camLookAt);
+
+  updateUI();
+}
+
+// ══════════════════════════════════════════════════════
+//  TRIGGER DEATH
+// ══════════════════════════════════════════════════════
+function triggerDeath(cause) {
+  if (state === 'dead') return;
+  state = 'dead';
+
+  const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
+  const { isNew, hiScores } = CACHE.saveRun(currentDifficulty, score, { time: elapsed, food: sessionFood, len: sessionMaxLen });
+  hiScore = hiScores[currentDifficulty] || 0;
+
+  document.getElementById('final-score').textContent = score;
+  document.getElementById('final-hi').textContent    = hiScore;
+  document.getElementById('hi-val').textContent      = hiScore;
+  document.getElementById('new-record-badge').classList.toggle('hidden', !isNew);
+  if (isNew) refreshDiffCards();
+
+  const mm = String(Math.floor(elapsed / 60));
+  const ss = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('stat-time').textContent = mm + ':' + ss;
+  document.getElementById('stat-food').textContent = sessionFood;
+  document.getElementById('stat-len').textContent  = sessionMaxLen;
+
+  const hist  = CACHE.get('history', { easy: [], medium: [], hard: [] });
+  const runs  = hist[currentDifficulty] || [];
+  const tbody = document.querySelector('#history-table tbody');
+  tbody.innerHTML = '';
+  runs.forEach((r, idx) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>#' + (idx+1) + '</td><td>' + r.score + '</td><td>' + r.food + ' food · len ' + r.len + '</td>';
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('game-over-screen').classList.remove('hidden');
+  headMat.color.setHex(0xff3366);
+  headMat.emissive.setHex(0xff3366);
+  headLight.color.setHex(0xff3366);
+}
+
+// ══════════════════════════════════════════════════════
+//  UPDATE UI
+// ══════════════════════════════════════════════════════
+function updateUI() {
+  document.getElementById('score-val').textContent = score;
+  document.getElementById('hi-val').textContent    = hiScore;
+  document.getElementById('len-val').textContent   = segments.length + 1;
+  document.getElementById('spd-val').textContent   = currentSpeed.toFixed(1);
+  const active = Math.round((currentSpeed / 30) * speedPips.length);
+  speedPips.forEach((p, i) => p.classList.toggle('active', i < active));
+}
+
+// ══════════════════════════════════════════════════════
+//  FPS COUNTER
+// ══════════════════════════════════════════════════════
+function updateFPS(now) {
+  frameCount++;
+  if (now - lastFpsTime >= 1000) {
+    fps = frameCount; frameCount = 0; lastFpsTime = now;
+    if (CONFIG.debugVisible) document.getElementById('dbg-fps').textContent = fps;
+    lowFpsStreak = fps < 30 ? lowFpsStreak + 1 : 0;
+    if (lowFpsStreak >= 2 && CONFIG.quality !== 'low') {
+      CONFIG.quality = 'low';
+      renderer.setPixelRatio(1);
+      renderer.shadowMap.enabled = false;
+      CONFIG.particleCount = 10;
+      document.getElementById('quality-select').value = 'low';
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  INPUT
+// ══════════════════════════════════════════════════════
+const cursorEl = document.getElementById('cursor');
+window.addEventListener('mousemove', e => {
+  usingKeyboard = false;
+  cursorEl.style.left = e.clientX + 'px';
+  cursorEl.style.top  = e.clientY + 'px';
+  mouseNDC.x =  (e.clientX / window.innerWidth)  * 2 - 1;
+  mouseNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;
+});
+window.addEventListener('touchmove', e => {
+  // swipe mode: finger steers snake like a mouse
+  if (controlMode === 'swipe') {
+    e.preventDefault();
+    usingKeyboard = false;
+    const t = e.touches[0];
+    mouseNDC.x =  (t.clientX / window.innerWidth)  * 2 - 1;
+    mouseNDC.y = -(t.clientY / window.innerHeight) * 2 + 1;
+  }
+  // joystick mode: handled by its own listener below
+}, { passive: false });
+
+window.addEventListener('keydown', e => {
+  keys[e.code] = true;
+  switch (e.code) {
+    case 'Space':
+      e.preventDefault();
+      if (state === 'play') {
+        state = 'paused'; document.getElementById('pause-badge').classList.remove('hidden'); clock.stop();
+      } else if (state === 'paused') {
+        state = 'play';   document.getElementById('pause-badge').classList.add('hidden');    clock.start();
+      }
+      break;
+    case 'KeyR':
+      if (state === 'play' || state === 'paused' || state === 'dead') restartGame();
+      break;
+    case 'KeyT': {
+      wallsEnabled = !wallsEnabled;
+      CONFIG.wallsEnabled = wallsEnabled;
+      buildWalls();
+      const wt = wallsEnabled ? 'WALLS ON' : 'WRAP MODE';
+      document.getElementById('wall-badge').textContent     = wt;
+      document.getElementById('wall-mode-info').textContent = wt;
+      break;
+    }
+    case 'KeyM':
+      if (!e.repeat) cycleControlMode();
+      break;
+    case 'Escape':
+      document.getElementById('settings-panel').classList.toggle('hidden');
+      break;
+    case 'Backquote':
+      CONFIG.debugVisible = !CONFIG.debugVisible;
+      document.getElementById('debug-overlay').classList.toggle('hidden', !CONFIG.debugVisible);
+      break;
+    case 'Equal': case 'NumpadAdd':      currentSpeed = Math.min(30, currentSpeed + 1); break;
+    case 'Minus': case 'NumpadSubtract': currentSpeed = Math.max(3,  currentSpeed - 1); break;
+  }
+  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD'].includes(e.code)) usingKeyboard = true;
+});
+window.addEventListener('keyup', e => { keys[e.code] = false; });
+
+function updateKeyDir() {
+  keyDir.set(0, 0, 0);
+  if (keys['ArrowUp']    || keys['KeyW']) keyDir.z -= 1;
+  if (keys['ArrowDown']  || keys['KeyS']) keyDir.z += 1;
+  if (keys['ArrowLeft']  || keys['KeyA']) keyDir.x -= 1;
+  if (keys['ArrowRight'] || keys['KeyD']) keyDir.x += 1;
+  if (keyDir.lengthSq() > 0) keyDir.normalize();
+}
+
+// ══════════════════════════════════════════════════════
+//  CONTROL MODE TOGGLE  (joystick | swipe | mouse)
+//  joystick = virtual D-pad (best for mobile thumbs)
+//  swipe    = touch follows finger like a mouse pointer
+//  mouse    = default PC mode (no joystick shown)
+// ══════════════════════════════════════════════════════
+const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+
+// Determine default: touch device → joystick, PC → mouse
+let controlMode = CACHE.get('ctrl_mode', isTouchDevice ? 'joystick' : 'mouse');
+
+function applyControlMode(mode) {
+  controlMode = mode;
+  CACHE.set('ctrl_mode', mode);
+
+  const joystickZone = document.getElementById('joystick-zone');
+  const toggleBtn    = document.getElementById('ctrl-toggle');
+  const iconEl       = document.getElementById('ctrl-icon');
+  const labelEl      = document.getElementById('ctrl-label');
+
+  // Clear all mode classes
+  toggleBtn.classList.remove('active-joystick', 'active-swipe');
+  document.body.classList.remove('touch-mode');
+  joystickZone.classList.remove('visible');
+
+  if (mode === 'joystick') {
+    joystickZone.classList.add('visible');
+    toggleBtn.classList.add('active-joystick');
+    document.body.classList.add('touch-mode');
+    iconEl.textContent  = '🕹';
+    labelEl.textContent = 'JOYSTICK';
+    toggleBtn.setAttribute('aria-label', 'Control mode: Joystick (click to switch to Swipe)');
+  } else if (mode === 'swipe') {
+    toggleBtn.classList.add('active-swipe');
+    document.body.classList.add('touch-mode');
+    iconEl.textContent  = '👆';
+    labelEl.textContent = 'SWIPE';
+    toggleBtn.setAttribute('aria-label', 'Control mode: Swipe (click to switch to Mouse)');
+  } else {
+    // mouse — PC default
+    iconEl.textContent  = '🖱';
+    labelEl.textContent = 'MOUSE';
+    toggleBtn.setAttribute('aria-label', 'Control mode: Mouse (click to switch to Joystick)');
+  }
+}
+
+document.getElementById('ctrl-toggle').addEventListener('click', cycleControlMode);
+
+// Cycle: mouse → joystick → swipe → mouse
+function cycleControlMode() {
+  const next = { mouse: 'joystick', joystick: 'swipe', swipe: 'mouse' };
+  applyControlMode(next[controlMode] || 'mouse');
+  showToast(
+    controlMode === 'joystick' ? '🕹  JOYSTICK MODE' :
+    controlMode === 'swipe'    ? '👆  SWIPE MODE'    :
+                                 '🖱  MOUSE MODE'
+  );
+}
+
+// Apply on load
+applyControlMode(controlMode);
+
+// ══════════════════════════════════════════════════════
+//  JOYSTICK (joystick mode only)
+// ══════════════════════════════════════════════════════
+(function() {
+  const zone = document.getElementById('joystick-zone');
+  const knob = document.getElementById('joystick-knob');
+  const RAD  = 65;
+  let active = false, cx = 0, cy = 0;
+
+  zone.addEventListener('touchstart', e => {
+    if (controlMode !== 'joystick') return;
+    e.stopPropagation();
+    active = true;
+    const r = zone.getBoundingClientRect();
+    cx = r.left + r.width / 2;
+    cy = r.top  + r.height / 2;
+    usingKeyboard = true;
+  }, { passive: true });
+
+  window.addEventListener('touchmove', e => {
+    if (!active || controlMode !== 'joystick') return;
+    const t  = e.touches[0];
+    const dx = t.clientX - cx, dy = t.clientY - cy;
+    const len = Math.sqrt(dx * dx + dy * dy);
+    const cl  = Math.min(len, RAD);
+    const nx  = len > 0 ? dx / len : 0;
+    const ny  = len > 0 ? dy / len : 0;
+    knob.style.transform = 'translate(calc(-50% + ' + (nx * cl) + 'px), calc(-50% + ' + (ny * cl) + 'px))';
+    if (len > 10) {
+      usingKeyboard = true;
+      keyDir.set(nx, 0, ny);
+      if (keyDir.lengthSq() > 0) keyDir.normalize();
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchend', e => {
+    if (!active) return;
+    active = false;
+    knob.style.transform = 'translate(-50%,-50%)';
+    keyDir.set(0, 0, 0);
+    // Only drop usingKeyboard if no physical keys held
+    const anyKey = Object.values(keys).some(Boolean);
+    if (!anyKey) usingKeyboard = false;
+  }, { passive: true });
+})();
+
+// ══════════════════════════════════════════════════════
+//  SWIPE / TOUCH-POINT MODE (swipe mode only)
+//  Touch point → mouseNDC, snake follows finger like PC mouse
+// ══════════════════════════════════════════════════════
+window.addEventListener('touchstart', e => {
+  if (controlMode !== 'swipe') return;
+  usingKeyboard = false;
+  const t = e.touches[0];
+  mouseNDC.x =  (t.clientX / window.innerWidth)  * 2 - 1;
+  mouseNDC.y = -(t.clientY / window.innerHeight) * 2 + 1;
+}, { passive: true });
+
+// ══════════════════════════════════════════════════════
+//  RESIZE
+// ══════════════════════════════════════════════════════
+let resizeDebounceTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeDebounceTimer);
+  resizeDebounceTimer = setTimeout(() => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  }, 100);
+});
+
+// ══════════════════════════════════════════════════════
+//  UI BUTTONS
+// ══════════════════════════════════════════════════════
+// Difficulty cards
+document.querySelectorAll('.diff-card').forEach(card => {
+  const select = () => {
+    currentDifficulty = card.dataset.diff;
+    document.querySelectorAll('.diff-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+  };
+  card.addEventListener('click', select);
+  card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(); } });
+});
+
+// Play button on level select
+document.getElementById('diff-play-btn').addEventListener('click', () => {
+  applyDifficulty(currentDifficulty);
+  document.getElementById('level-select-screen').classList.add('hidden');
+  document.getElementById('start-screen').classList.remove('hidden');
+  state = 'start';
+});
+
+// Start game — guarded: only fires when genuinely on the start screen
+document.getElementById('start-btn').addEventListener('click', () => {
+  if (state !== 'start') return;            // prevent double-fire
+  state = 'play';                           // set state first, before any async work
+  document.getElementById('start-screen').classList.add('hidden');
+  initGame();
+  clock.start();
+});
+
+// Restart (same difficulty)
+function restartGame() {
+  if (state !== 'play' && state !== 'paused' && state !== 'dead') return;
+  state = 'play';
+  document.getElementById('game-over-screen').classList.add('hidden');
+  document.getElementById('pause-badge').classList.add('hidden');
+  initGame();
+  clock.start();   // always reset clock for a clean dt on new game
+  particles.length = 0;
+}
+document.getElementById('restart-btn').addEventListener('click', restartGame);
+
+// Back to menu
+document.getElementById('menu-btn').addEventListener('click', () => {
+  document.getElementById('game-over-screen').classList.add('hidden');
+  refreshDiffCards();
+  document.getElementById('level-select-screen').classList.remove('hidden');
+  state = 'levelselect';
+});
+
+// Quality select (saves to cache)
+document.getElementById('quality-select').addEventListener('change', e => {
+  CONFIG.quality = e.target.value;
+  CACHE.set('settings', { quality: CONFIG.quality });
+  switch (CONFIG.quality) {
+    case 'low':  renderer.setPixelRatio(1);                                     renderer.shadowMap.enabled = false; CONFIG.particleCount = 10; break;
+    case 'med':  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); renderer.shadowMap.enabled = true;  CONFIG.particleCount = 30; break;
+    case 'high': renderer.setPixelRatio(window.devicePixelRatio);               renderer.shadowMap.enabled = true;  CONFIG.particleCount = 60; break;
+  }
+  document.getElementById('particle-count').value = CONFIG.particleCount;
+});
+document.getElementById('particle-count').addEventListener('input', e => { CONFIG.particleCount = parseInt(e.target.value); });
+document.getElementById('speed-slider').addEventListener('input',   e => { currentSpeed = parseFloat(e.target.value); });
+
+// ══════════════════════════════════════════════════════
+//  RENDER LOOP
+// ══════════════════════════════════════════════════════
+function animate(now) {
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.033);
+  updateFPS(now);
+  updateKeyDir();
+  update(dt);
+  renderer.render(scene, camera);
+}
+
+// ══════════════════════════════════════════════════════
+//  BOOT
+// ══════════════════════════════════════════════════════
+// Apply last difficulty's badge without changing screen state
+(function() {
+  const p = DIFF[currentDifficulty];
+  const badge = document.getElementById('level-badge');
+  badge.textContent     = p.label;
+  badge.style.color     = p.color;
+  badge.style.borderColor = p.color;
+  document.getElementById('hi-val').textContent   = hiScore;
+  document.getElementById('final-hi').textContent = hiScore;
+})();
+
+document.getElementById('loading-screen').style.display = 'none';
+requestAnimationFrame(animate);
+
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initSerpentine, { once: true });
+} else {
+  initSerpentine();
+}
+</script>
+</body>
+</html>

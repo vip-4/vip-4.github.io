@@ -1,0 +1,11 @@
+{
+  "name": "Crate Blast — BodhiProtocol",
+  "short_name": "Crate Blast",
+  "description": "Pull back, launch, knock down crates and pop every orb. Physics slingshot, 5 levels.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#132a1f",
+  "theme_color": "#132a1f",
+  "orientation": "portrait",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

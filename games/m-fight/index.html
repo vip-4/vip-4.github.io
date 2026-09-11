@@ -1,0 +1,85 @@
+<html>
+
+<body style="margin: 0;">
+  <img src="bg.png" class="bg">
+  <h1 class="title">M-Fight</h1>
+  <div class="btn-group">
+    <button class="btn btn-1" onclick="location.replace('pvp.html');">
+      <p class="start">Start</p>Player vs Player
+    </button>
+
+    <button class="btn btn-2" onclick="location.replace('pvc.html');">
+      <p class="start">Start</p>Player vs Computer
+    </button>
+  </div>
+  
+  <button class="btn btn-3" onclick="location.replace('help.html');">
+    <p class="start">Help</p>
+  </button>
+</body>
+
+</html>
+
+<style>
+  * {
+    font-family: 'Fira Code', 'consolas', monospace;
+    user-select: none;
+  }
+
+  .bg {
+    z-index: -1;
+    height: 100vh;
+    width: 100vw;
+    filter: blur(3px);
+  }
+
+  .title {
+    position: fixed;
+    width: 100vw;
+    top: 180px;
+    text-align: center;
+    font-size: 100px;
+    font-weight: bold;
+    color: #ECA944;
+  }
+
+  .btn-group {
+    width: 100vw;
+    top: 400px;
+    position: fixed;
+    text-align: center;
+  }
+
+  .btn {
+    color: #FFFFFF;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+  }
+
+  .btn-1 {
+    background-color: #86B300;
+  }
+
+  .btn-2 {
+    background-color: #3199E1;
+    margin-left: 30px;
+  }
+
+  .btn-3 {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background-color: #A37ACC;
+  }
+
+  .start {
+    font-weight: bold;
+    font-size: 30px;
+    margin: 0;
+  }
+
+  button:hover {
+    cursor: pointer;
+  }
+</style>
